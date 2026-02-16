@@ -8,4 +8,5 @@ class ProductResponse
     public string $name;
     public string $description;
     public float $price;
+    public int $stock = 0; 
 }
