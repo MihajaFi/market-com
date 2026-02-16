@@ -2,10 +2,8 @@
 
 namespace App\Service\ServiceImpl;
 
-use App\Dto\Request\StockRequest;
 use App\Dto\Response\StockResponse;
 use App\Entity\Stock;
-use App\Entity\Product;
 use App\Mapper\StockMapper;
 use App\Repository\StockRepository;
 use App\Repository\ProductRepository;

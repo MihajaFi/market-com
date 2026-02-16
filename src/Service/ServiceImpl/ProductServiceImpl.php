@@ -2,7 +2,6 @@
 
 namespace App\Service\ServiceImpl;
 
-use App\Dto\Request\ProductRequest;
 use App\Dto\Response\ProductResponse;
 use App\Entity\Product;
 use App\Mapper\ProductMapper;
