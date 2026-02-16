@@ -22,7 +22,13 @@ class ProductMapper
         $dto->id = $product->getId();
         $dto->name = $product->getName();
         $dto->description = $product->getDescription();
-        $dto->price = $product->getPrice(); 
+        $dto->price = $product->getPrice();
+
+        $totalQuantity = 0;
+        foreach ($product->getStocks() as $stock) {
+            $totalQuantity += $stock->getQuantity();
+        }
+        $dto->stock = $totalQuantity;
 
         return $dto;
     }
