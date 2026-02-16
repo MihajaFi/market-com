@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Dto\Request\StockRequest;
-use App\Dto\Response\StockResponse;
 use App\Service\ServiceImpl\StockServiceImpl;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -11,9 +10,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
-#[Route('/api/stocks')]
+    #[Route('/api/stocks')]
 class StockController extends AbstractController
-{
+    {
     private StockServiceImpl $service;
     private SerializerInterface $serializer;
 
