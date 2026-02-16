@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Dto\Request\ProductRequest;
-use App\Dto\Response\ProductResponse;
 use App\Service\ServiceImpl\ProductServiceImpl;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -11,9 +10,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
-#[Route('/api/products')]
+    #[Route('/api/products')]
 class ProductController extends AbstractController
-{
+    {
     private ProductServiceImpl $service;
     private SerializerInterface $serializer;
 
