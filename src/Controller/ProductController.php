@@ -41,40 +41,72 @@ class ProductController extends AbstractController
         return new JsonResponse($product);
     }
 
-    // POST create
     #[Route('', name: 'product_create', methods: ['POST'])]
     public function create(Request $request): JsonResponse
-    {
-        $productRequest = $this->serializer->deserialize(
-            $request->getContent(),
-            ProductRequest::class,
-            'json'
-        );
-        if (empty($productRequest->name) || empty($productRequest->description) || $productRequest->price <= 0) {
-            return new JsonResponse(['message' => 'Invalid product data'], 400);
-        }
-        $product = $this->service->save($productRequest);
-        return new JsonResponse($product, 201);
+   {
+    $dto = new ProductRequest();
+
+    $dto->name = $request->request->get('name');
+    $dto->description = $request->request->get('description');
+    $dto->price = (float)$request->request->get('price');
+    $dto->image = $request->files->get('image');
+
+    if (empty($dto->name) || empty($dto->description) || $dto->price <= 0) {
+        return new JsonResponse(['message' => 'Invalid product data'], 400);
     }
 
-    // PUT update
-    #[Route('/{id}', name: 'product_update', methods: ['PUT'])]
+    $imagePath = null;
+
+    if ($dto->image) {
+        $fileName = uniqid().'.'.$dto->image->guessExtension();
+        $dto->image->move(
+            $this->getParameter('product_images_dir'),
+            $fileName
+        );
+
+        $imagePath = '/uploads/products/'.$fileName;
+    }
+
+    $product = $this->service->register($dto, $imagePath);
+
+    return new JsonResponse($product, 201);
+    }
+
+   #[Route('/{id}', name: 'product_update', methods: ['PUT'])]
     public function update(int $id, Request $request): JsonResponse
     {
-        $productRequest = $this->serializer->deserialize(
-            $request->getContent(),
-            ProductRequest::class,
-            'json'
-        );
-        if (empty($productRequest->name) || empty($productRequest->description) || $productRequest->price <= 0) {
-            return new JsonResponse(['message' => 'Invalid product data'], 400);
-        }
-        $product = $this->service->update($id, $productRequest);
-        if (!$product) {
-            return new JsonResponse(['message' => 'Product not found'], 404);
-        }
-        return new JsonResponse($product);
+    $dto = new ProductRequest();
+
+    $dto->name = $request->request->get('name');
+    $dto->description = $request->request->get('description');
+    $dto->price = (float)$request->request->get('price');
+    $dto->image = $request->files->get('image');
+
+    if (empty($dto->name) || empty($dto->description) || $dto->price <= 0) {
+        return new JsonResponse(['message' => 'Invalid product data'], 400);
     }
+
+    $imagePath = null;
+
+    if ($dto->image) {
+        $fileName = uniqid().'.'.$dto->image->guessExtension();
+        $dto->image->move(
+            $this->getParameter('product_images_dir'),
+            $fileName
+        );
+
+        $imagePath = '/uploads/products/'.$fileName;
+    }
+
+    $product = $this->service->update($id, $dto, $imagePath);
+
+    if (!$product) {
+        return new JsonResponse(['message' => 'Product not found'], 404);
+    }
+
+    return new JsonResponse($product);
+    }
+
 
     // DELETE
     #[Route('/{id}', name: 'product_delete', methods: ['DELETE'])]

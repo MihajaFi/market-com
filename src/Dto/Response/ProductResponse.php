@@ -9,4 +9,5 @@ class ProductResponse
     public string $description;
     public float $price;
     public int $stock = 0; 
+    public ?string $image = null;
 }
