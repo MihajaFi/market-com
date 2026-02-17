@@ -2,89 +2,89 @@
 
 namespace App\Controller;
 
-use App\Dto\Request\PromotionLoyaltyRequest;
-use App\Dto\Response\PromotionLoyaltyResponse;
-use App\Service\ServiceImpl\PromotionLoyaltyServiceImpl;
+use App\Dto\Request\ProductRequest;
+use App\Dto\Response\ProductResponse;
+use App\Service\ServiceImpl\ProductServiceImpl;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
-#[Route('/api/PromotionLoyaltys')]
-class PromotionLoyaltyController extends AbstractController
+#[Route('/api/products')]
+class ProductController extends AbstractController
 {
-    private PromotionLoyaltyServiceImpl $service;
+    private ProductServiceImpl $service;
     private SerializerInterface $serializer;
 
-    public function __construct(PromotionLoyaltyServiceImpl $service, SerializerInterface $serializer)
+    public function __construct(ProductServiceImpl $service, SerializerInterface $serializer)
     {
         $this->service = $service;
         $this->serializer = $serializer;
     }
 
     // GET all
-    #[Route('', name: 'PromotionLoyalty_list', methods: ['GET'])]
+    #[Route('', name: 'product_list', methods: ['GET'])]
     public function list(): JsonResponse
     {
-        $PromotionLoyaltys = $this->service->findAll();
-        return new JsonResponse($PromotionLoyaltys); 
+        $products = $this->service->findAll();
+        return new JsonResponse($products); 
     }
 
     // GET by ID
-    #[Route('/{id}', name: 'PromotionLoyalty_get', methods: ['GET'])]
+    #[Route('/{id}', name: 'product_get', methods: ['GET'])]
     public function get(int $id): JsonResponse
     {
-        $PromotionLoyalty = $this->service->findById($id);
-        if (!$PromotionLoyalty) {
-            return new JsonResponse(['message' => 'PromotionLoyalty not found'], 404);
+        $product = $this->service->findById($id);
+        if (!$product) {
+            return new JsonResponse(['message' => 'Product not found'], 404);
         }
-        return new JsonResponse($PromotionLoyalty);
+        return new JsonResponse($product);
     }
 
     // POST create
-    #[Route('', name: 'PromotionLoyalty_create', methods: ['POST'])]
+    #[Route('', name: 'product_create', methods: ['POST'])]
     public function create(Request $request): JsonResponse
     {
-        $PromotionLoyaltyRequest = $this->serializer->deserialize(
+        $productRequest = $this->serializer->deserialize(
             $request->getContent(),
-            PromotionLoyaltyRequest::class,
+            ProductRequest::class,
             'json'
         );
-        if (empty($PromotionLoyaltyRequest->name) || empty($PromotionLoyaltyRequest->description) || $PromotionLoyaltyRequest->price <= 0) {
-            return new JsonResponse(['message' => 'Invalid PromotionLoyalty data'], 400);
+        if (empty($productRequest->name) || empty($productRequest->description) || $productRequest->price <= 0) {
+            return new JsonResponse(['message' => 'Invalid product data'], 400);
         }
-        $PromotionLoyalty = $this->service->save($PromotionLoyaltyRequest);
-        return new JsonResponse($PromotionLoyalty, 201);
+        $product = $this->service->save($productRequest);
+        return new JsonResponse($product, 201);
     }
 
     // PUT update
-    #[Route('/{id}', name: 'PromotionLoyalty_update', methods: ['PUT'])]
+    #[Route('/{id}', name: 'product_update', methods: ['PUT'])]
     public function update(int $id, Request $request): JsonResponse
     {
-        $PromotionLoyaltyRequest = $this->serializer->deserialize(
+        $productRequest = $this->serializer->deserialize(
             $request->getContent(),
-            PromotionLoyaltyRequest::class,
+            ProductRequest::class,
             'json'
         );
-        if (empty($PromotionLoyaltyRequest->name) || empty($PromotionLoyaltyRequest->description) || $PromotionLoyaltyRequest->price <= 0) {
-            return new JsonResponse(['message' => 'Invalid PromotionLoyalty data'], 400);
+        if (empty($productRequest->name) || empty($productRequest->description) || $productRequest->price <= 0) {
+            return new JsonResponse(['message' => 'Invalid product data'], 400);
         }
-        $PromotionLoyalty = $this->service->update($id, $PromotionLoyaltyRequest);
-        if (!$PromotionLoyalty) {
-            return new JsonResponse(['message' => 'PromotionLoyalty not found'], 404);
+        $product = $this->service->update($id, $productRequest);
+        if (!$product) {
+            return new JsonResponse(['message' => 'Product not found'], 404);
         }
-        return new JsonResponse($PromotionLoyalty);
+        return new JsonResponse($product);
     }
 
     // DELETE
-    #[Route('/{id}', name: 'PromotionLoyalty_delete', methods: ['DELETE'])]
+    #[Route('/{id}', name: 'product_delete', methods: ['DELETE'])]
     public function delete(int $id): JsonResponse
     {
         $deleted = $this->service->delete($id);
         if (!$deleted) {
-            return new JsonResponse(['message' => 'PromotionLoyalty not found'], 404);
+            return new JsonResponse(['message' => 'Product not found'], 404);
         }
-        return new JsonResponse(['message' => 'PromotionLoyalty deleted']);
+        return new JsonResponse(['message' => 'Product deleted']);
     }
 }
