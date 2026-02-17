@@ -330,7 +330,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         }>,
  *     },
  *     validation?: bool|array{ // Validation configuration
- *         enabled?: bool|Param, // Default: false
+ *         enabled?: bool|Param, // Default: true
  *         cache?: scalar|Param|null, // Deprecated: Setting the "framework.validation.cache.cache" configuration option is deprecated. It will be removed in version 8.0.
  *         enable_attributes?: bool|Param, // Default: true
  *         static_method?: list<scalar|Param|null>,
@@ -957,7 +957,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         datetime?: array{
  *             default_format?: scalar|Param|null, // Default: "Y-m-d\\TH:i:sP"
  *             default_deserialization_formats?: list<scalar|Param|null>,
- *             default_timezone?: scalar|Param|null, // Default: "UTC"
+ *             default_timezone?: scalar|Param|null, // Default: "Europe/Berlin"
  *             cdata?: scalar|Param|null, // Default: true
  *         },
  *         array_collection?: array{
@@ -1057,7 +1057,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             datetime?: array{
  *                 default_format?: scalar|Param|null, // Default: "Y-m-d\\TH:i:sP"
  *                 default_deserialization_formats?: list<scalar|Param|null>,
- *                 default_timezone?: scalar|Param|null, // Default: "UTC"
+ *                 default_timezone?: scalar|Param|null, // Default: "Europe/Berlin"
  *                 cdata?: scalar|Param|null, // Default: true
  *             },
  *             array_collection?: array{
@@ -1790,7 +1790,7 @@ namespace Symfony\Component\Routing\Loader\Configurator;
  * @psalm-type AliasConfig = array{
  *     alias: string,
  *     deprecated?: array{package:string, version:string, message?:string},
- * }
+ * }
  * @psalm-type RoutesConfig = array{
  *     "when@dev"?: array<string, RouteConfig|ImportConfig|AliasConfig>,
  *     "when@prod"?: array<string, RouteConfig|ImportConfig|AliasConfig>,
