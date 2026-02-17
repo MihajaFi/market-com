@@ -8,13 +8,15 @@ use App\Dto\Response\ProductResponse;
 
 class ProductMapper
 {
-    public static function toEntity(ProductRequest $dto): Product
-    {
-        return (new Product())
-            ->setName($dto->name)
-            ->setDescription($dto->description)
-            ->setPrice($dto->price);
-    }
+    public static function toEntity(ProductRequest $dto, ?string $imagePath = null): Product
+  {
+    return (new Product())
+        ->setName($dto->name)
+        ->setDescription($dto->description)
+        ->setPrice($dto->price)
+        ->setImage($imagePath);
+  }
+
 
     public static function toResponse(Product $product): ProductResponse
     {
@@ -29,6 +31,8 @@ class ProductMapper
             $totalQuantity += $stock->getQuantity();
         }
         $dto->stock = $totalQuantity;
+        $dto->image = $product->getImage();
+
 
         return $dto;
     }
