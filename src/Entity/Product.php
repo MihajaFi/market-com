@@ -21,6 +21,9 @@ class Product
     #[ORM\Column(type: 'text')]
     private string $description;
 
+    #[ORM\Column(type: 'text')]
+    private string $category;
+
     #[ORM\Column(type: 'float')]
     private float $price;
 
@@ -71,6 +74,9 @@ class Product
     public function setPrice(float $price): self { $this->price = $price; return $this; }
 
     public function getImage(): ?string{return $this->image;}
-    public function setImage(?string $image): self{$this->image = $image;return $this;
-}
+    public function setImage(?string $image): self{$this->image = $image;return $this;}
+
+    public function getCategory(): ?string { return $this->category; }
+    public function setCategory(string $category): self { $this->category = $category; return $this; }
+
 }
