@@ -13,6 +13,7 @@ class ProductMapper
     return (new Product())
         ->setName($dto->name)
         ->setDescription($dto->description)
+        ->setCategory($dto->category)
         ->setPrice($dto->price)
         ->setImage($imagePath);
   }
@@ -24,6 +25,7 @@ class ProductMapper
         $dto->id = $product->getId();
         $dto->name = $product->getName();
         $dto->description = $product->getDescription();
+        $dto->category = $product->getCategory();
         $dto->price = $product->getPrice();
 
         $totalQuantity = 0;
@@ -42,6 +44,7 @@ class ProductMapper
         return $product
             ->setName($dto->name)
             ->setDescription($dto->description)
+            ->setCategory($dto->category)
             ->setPrice($dto->price);
     }
 }
