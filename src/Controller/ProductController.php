@@ -48,6 +48,7 @@ class ProductController extends AbstractController
 
     $dto->name = $request->request->get('name');
     $dto->description = $request->request->get('description');
+    $dto->category = $request->request->get('category');
     $dto->price = (float)$request->request->get('price');
     $dto->image = $request->files->get('image');
 
@@ -80,6 +81,7 @@ class ProductController extends AbstractController
     $dto->name = $request->request->get('name');
     $dto->description = $request->request->get('description');
     $dto->price = (float)$request->request->get('price');
+    $dto->category = $request->request->get('category');
     $dto->image = $request->files->get('image');
 
     if (empty($dto->name) || empty($dto->description) || $dto->price <= 0) {
