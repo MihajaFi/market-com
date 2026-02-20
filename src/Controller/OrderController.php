@@ -35,6 +35,9 @@ public function create(Request $request): Response
         $orderRequest = new OrderAndOrderItemRequest();
         $orderRequest->status = $data['status'] ?? '';
         $orderRequest->userId = isset($data['userId']) ? (int) $data['userId'] : 0;
+        $orderRequest->address = $data['address'] ?? '';
+        $orderRequest->phone = $data['phone'] ?? '';
+        $orderRequest->paymentMethod = $data['paymentMethod'] ?? '';
 
         $orderRequest->items = [];
         foreach ($data['items'] ?? [] as $itemData) {
@@ -104,6 +107,9 @@ public function create(Request $request): Response
         $orderRequest = new OrderAndOrderItemRequest();
         $orderRequest->status = $data['status'] ?? '';
         $orderRequest->userId = isset($data['userId']) ? (int) $data['userId'] : 0;
+        $orderRequest->address = $data['address'] ?? '';
+        $orderRequest->phone = $data['phone'] ?? '';
+        $orderRequest->paymentMethod = $data['paymentMethod'] ?? '';
 
         $orderRequest->items = [];
         if (isset($data['items']) && is_array($data['items'])) {

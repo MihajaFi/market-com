@@ -109,7 +109,10 @@ class OrderServiceImpl implements ServiceInterface
     }
     $order->getItems()->clear();
 
-    $order->setUser($user)->setStatus($dto->status);
+    $order->setUser($user)->setStatus($dto->status)
+        ->setAddress($dto->address)
+        ->setPhone($dto->phone)
+         ->setPaymentMethod($dto->paymentMethod);
 
     foreach ($dto->items as $itemDto) {
         $product = $productsById[$itemDto->productId] ?? null;
