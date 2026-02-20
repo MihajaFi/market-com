@@ -19,8 +19,10 @@ class OrderMapper
             $order->getTotalAmount(),
             $order->getStatus(),
             $order->getUser()->getUsername(),
-            $order->getUser()->getEmail(),
-            $items
+            $items,
+            $order->getAddress(),
+            $order->getPhone(),
+            $order->getPaymentMethod()
         );
     }
 
@@ -29,6 +31,9 @@ public static function toEntity(OrderAndOrderItemRequest $dto, $user, $productsB
     $order = new \App\Entity\Order();
     $order->setUser($user);
     $order->setStatus($dto->status);
+    $order->setAddress($dto->address);
+    $order->setPhone($dto->phone);
+    $order->setPaymentMethod($dto->paymentMethod);
 
     foreach ($dto->items as $itemDto) {
         $product = $productsById[$itemDto->productId] ?? null;

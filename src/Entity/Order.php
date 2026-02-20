@@ -25,6 +25,15 @@ class Order
     #[ORM\Column(length: 25)]
     private ?string $status = null;
 
+     #[ORM\Column(type: 'text')]
+    private string $address;
+
+     #[ORM\Column(type: 'text')]
+    private string $phone;
+
+     #[ORM\Column(type: 'text')]
+    private string $paymentMethod;
+
     #[ORM\ManyToOne(inversedBy: 'orders')]
     #[ORM\JoinColumn(name: 'id_user', nullable: false)]
     private ?User $user = null;
@@ -111,4 +120,39 @@ class Order
         $this->items->removeElement($item);
         return $this;
     }
+
+        public function getAddress(): string
+        {
+            return $this->address;
+        }
+
+        public function setAddress(string $address): static
+        {
+            $this->address = $address;
+            return $this;
+        }
+
+        public function getPhone(): string
+        {
+            return $this->phone;
+        }
+
+        public function setPhone(string $phone): static
+        {
+            $this->phone = $phone;
+            return $this;
+        }
+
+        public function getPaymentMethod(): string
+        {
+            return $this->paymentMethod;
+        }
+
+        public function setPaymentMethod(string $paymentMethod): static
+        {
+            $this->paymentMethod = $paymentMethod;
+            return $this;
+        }
+
+        
 }
