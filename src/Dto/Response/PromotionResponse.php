@@ -8,4 +8,6 @@ class PromotionResponse
     public int $id;
     public PromotionLoyaltyResponse $promotionLoyalty;
     public array $productItems = [];
+    public string $type;
+    public string $status;
 }
