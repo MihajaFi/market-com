@@ -12,11 +12,13 @@ use App\Repository\UserRepository;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Service\ServiceInterface;
+use App\Repository\MerchantRepository;
 
 class OrderServiceImpl implements ServiceInterface
 {
     private OrderRepository $orderRepo;
     private UserRepository $userRepo;
+    private MerchantRepository $merchantRepo;
     private ProductRepository $productRepo;
     private EntityManagerInterface $em;
 
@@ -24,12 +26,14 @@ class OrderServiceImpl implements ServiceInterface
         OrderRepository $orderRepo,
         UserRepository $userRepo,
         ProductRepository $productRepo,
-        EntityManagerInterface $em
+        EntityManagerInterface $em,
+        MerchantRepository $merchantRepo
     ) {
         $this->orderRepo = $orderRepo;
         $this->userRepo = $userRepo;
         $this->productRepo = $productRepo;
         $this->em = $em;
+        $this->merchantRepo = $merchantRepo;
     }
 
     public function findById(int $id): ?OrderResponse
@@ -54,12 +58,15 @@ class OrderServiceImpl implements ServiceInterface
     $user = $this->userRepo->find($dto->userId);
     if (!$user) throw new \Exception("User not found");
 
+    $merchant = $this->merchantRepo->find($dto->merchantId);
+    if (!$merchant) throw new \Exception("Merchant not found");
+
     $productIds = array_map(fn($i) => $i->productId, $dto->items);
     $products = $this->productRepo->findBy(['id' => $productIds]);
     $productsById = [];
     foreach ($products as $p) $productsById[$p->getId()] = $p;
 
-    $order = OrderMapper::toEntity($dto, $user, $productsById);
+    $order = OrderMapper::toEntity($dto, $user, $merchant, $productsById);
 
     if ($order->getStatus() === 'PAID') {
         foreach ($order->getItems() as $item) {
@@ -91,6 +98,9 @@ class OrderServiceImpl implements ServiceInterface
 
     $user = $this->userRepo->find($dto->userId);
     if (!$user) throw new \Exception("User not found");
+
+    $merchant = $this->merchantRepo->find($dto->merchantId);
+    if (!$merchant) throw new \Exception("Merchant not found");
 
     $productIds = array_map(fn($i) => $i->productId, $dto->items);
     $products = $this->productRepo->findBy(['id' => $productIds]);

@@ -35,6 +35,7 @@ public function create(Request $request): Response
         $orderRequest = new OrderAndOrderItemRequest();
         $orderRequest->status = $data['status'] ?? '';
         $orderRequest->userId = isset($data['userId']) ? (int) $data['userId'] : 0;
+        $orderRequest->merchantId = isset($data['merchantId']) ? (int) $data['merchantId'] : 0;
         $orderRequest->address = $data['address'] ?? '';
         $orderRequest->phone = $data['phone'] ?? '';
         $orderRequest->paymentMethod = $data['paymentMethod'] ?? '';
@@ -107,6 +108,7 @@ public function create(Request $request): Response
         $orderRequest = new OrderAndOrderItemRequest();
         $orderRequest->status = $data['status'] ?? '';
         $orderRequest->userId = isset($data['userId']) ? (int) $data['userId'] : 0;
+        $orderRequest->merchantId = isset($data['merchantId']) ? (int) $data['merchantId'] : 0;
         $orderRequest->address = $data['address'] ?? '';
         $orderRequest->phone = $data['phone'] ?? '';
         $orderRequest->paymentMethod = $data['paymentMethod'] ?? '';
