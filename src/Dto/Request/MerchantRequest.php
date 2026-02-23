@@ -21,8 +21,4 @@ class MerchantRequest
     
     #[Assert\NotBlank(message: 'Le statut du marchand est obligatoire')]
     public string $status = '';
-    
-    #[Assert\NotBlank(message: 'La couleur de l\'avatar du marchand est obligatoire')]
-    public string $avatarColor = '';
-    
 }
