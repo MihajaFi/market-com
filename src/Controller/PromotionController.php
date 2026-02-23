@@ -24,15 +24,11 @@ class PromotionController extends AbstractController
         $this->serializer = $serializer;
     }
 
-    /* ================= GET ALL ================= */
-
     #[Route('', methods: ['GET'])]
     public function list(): JsonResponse
     {
         return $this->json($this->service->findAll());
     }
-
-    /* ================= GET BY ID ================= */
 
     #[Route('/{id}', methods: ['GET'])]
     public function get(int $id): JsonResponse
@@ -46,8 +42,6 @@ class PromotionController extends AbstractController
         return $this->json($promotion);
     }
 
-    /* ================= CREATE ================= */
-
     #[Route('', methods: ['POST'])]
     public function create(Request $request): JsonResponse
     {
@@ -58,16 +52,21 @@ class PromotionController extends AbstractController
             'json'
         );
 
-        if (!$dto->promotionLoyalty || empty($dto->productItems)) {
-            return $this->json(['message' => 'promotionLoyalty and productItems are required'], 400);
+        if (
+            !$dto->promotionLoyalty ||
+            empty($dto->productItems) ||
+            empty($dto->type) ||
+            empty($dto->status)
+        ) {
+            return $this->json([
+                'message' => 'promotionLoyalty, productItems, type and status are required'
+            ], 400);
         }
 
         $promotion = $this->service->save($dto);
 
         return $this->json($promotion, 201);
     }
-
-    /* ================= UPDATE ================= */
 
     #[Route('/{id}', methods: ['PUT'])]
     public function update(int $id, Request $request): JsonResponse
@@ -79,8 +78,15 @@ class PromotionController extends AbstractController
             'json'
         );
 
-        if (!$dto->promotionLoyalty || empty($dto->productItems)) {
-            return $this->json(['message' => 'promotionLoyalty and productItems are required'], 400);
+        if (
+            !$dto->promotionLoyalty ||
+            empty($dto->productItems) ||
+            empty($dto->type) ||
+            empty($dto->status)
+        ) {
+            return $this->json([
+                'message' => 'promotionLoyalty, productItems, type and status are required'
+            ], 400);
         }
 
         $promotion = $this->service->update($id, $dto);
@@ -91,8 +97,6 @@ class PromotionController extends AbstractController
 
         return $this->json($promotion);
     }
-
-    /* ================= DELETE ================= */
 
     #[Route('/{id}', methods: ['DELETE'])]
     public function delete(int $id): JsonResponse

@@ -30,8 +30,6 @@ class PromotionServiceImpl implements ServiceInterface
         $this->mapper = $mapper;
     }
 
-    /* ================= FIND ================= */
-
     public function findById(int $id): ?PromotionResponse
     {
         $promotion = $this->repository->find($id);
@@ -46,12 +44,8 @@ class PromotionServiceImpl implements ServiceInterface
         );
     }
 
-    /* ================= SAVE ================= */
-
     public function save(object $dto): PromotionResponse
     {
-        /** @var PromotionRequest $dto */
-
         $productsById = $this->loadProductsById($dto);
 
         $promotion = $this->mapper->toEntity($dto, $productsById);
@@ -62,20 +56,19 @@ class PromotionServiceImpl implements ServiceInterface
         return $this->mapper->toResponse($promotion);
     }
 
-    /* ================= UPDATE ================= */
-
     public function update(int $id, object $dto): ?PromotionResponse
     {
-        /** @var PromotionRequest $dto */
-
         $promotion = $this->repository->find($id);
-        if (!$promotion) return null;
+        if (!$promotion) {
+            return null;
+        }
 
         $productsById = $this->loadProductsById($dto);
-
         $updated = $this->mapper->toEntity($dto, $productsById);
 
         $promotion->setPromotionLoyalty($updated->getPromotionLoyalty());
+        $promotion->setType($updated->getType());
+        $promotion->setStatus($updated->getStatus());
 
         foreach ($promotion->getProductItems() as $item) {
             $promotion->removeProductItem($item);
@@ -90,18 +83,19 @@ class PromotionServiceImpl implements ServiceInterface
         return $this->mapper->toResponse($promotion);
     }
 
-
     public function delete(int $id): bool
     {
         $promotion = $this->repository->find($id);
-        if (!$promotion) return false;
+        if (!$promotion) {
+            return false;
+        }
 
         $this->em->remove($promotion);
         $this->em->flush();
 
         return true;
     }
-    
+
     private function loadProductsById(PromotionRequest $dto): array
     {
         $ids = array_map(
