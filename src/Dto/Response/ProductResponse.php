@@ -11,4 +11,5 @@ class ProductResponse
     public float $price;
     public int $stock = 0; 
     public ?string $image = null;
+    public string $merchant = '';
 }

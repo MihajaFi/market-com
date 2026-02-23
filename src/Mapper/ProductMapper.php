@@ -35,6 +35,13 @@ class ProductMapper
         $dto->stock = $totalQuantity;
         $dto->image = $product->getImage();
 
+       $merchantName = '';
+
+       foreach ($product->getSells() as $sell) {
+       $merchantName = $sell->getMerchant()->getName();
+        }
+
+       $dto->merchant = $merchantName;
 
         return $dto;
     }

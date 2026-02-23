@@ -51,7 +51,7 @@ class MerchantController extends AbstractController
     $dto->city = $data['city'] ?? '';
     $dto->category = $data['category'] ?? '';
     $dto->status = $data['status'] ?? '';
-    $dto->avatarColor = $data['avatarColor'] ?? '';
+    $dto->avatarColor = '';
 
     if (empty($dto->name) || empty($dto->email)) {
         return $this->json(['message' => 'Invalid merchant data'], 400);
