@@ -2,8 +2,9 @@
 
 namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\Product;
 use App\Entity\PromotionLoyalty;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity]
 class Promotion
@@ -17,9 +18,18 @@ class Promotion
     #[ORM\JoinColumn(name: "id_promotion_loyalty", referencedColumnName: "id", nullable: false)]
     private PromotionLoyalty $promotionLoyalty;
 
-    #[ORM\ManyToOne(targetEntity: Product::class)]
-    #[ORM\JoinColumn(name: 'id_product', referencedColumnName: 'id', nullable: false)]
-    private Product $product;
+   #[ORM\OneToMany(
+       mappedBy: 'promotion',
+       targetEntity: ProductItem::class,
+       cascade: ['persist', 'remove'],
+       orphanRemoval: true
+   )]
+    private Collection $productItems;
+
+     public function __construct()
+    {
+        $this->productItems = new ArrayCollection();
+    }
 
     // ================= GETTERS =================
 
@@ -33,10 +43,11 @@ class Promotion
         return $this->promotionLoyalty;
     }
 
-    public function getProduct(): Product
+    public function getProductItems(): Collection
     {
-        return $this->product;
+        return $this->productItems;
     }
+
 
     // ================= SETTERS =================
 
@@ -46,9 +57,18 @@ class Promotion
         return $this;
     }
 
-    public function setProduct(Product $product): self
+    public function addProductItem(ProductItem $item): static
     {
-        $this->product = $product;
+        if (!$this->productItems->contains($item)) {
+            $this->productItems->add($item);
+            $item->setPromotion($this);
+        }
+        return $this;
+    }
+
+    public function removeProductItem(ProductItem $item): static
+    {
+        $this->productItems->removeElement($item);
         return $this;
     }
 

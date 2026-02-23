@@ -9,6 +9,7 @@ use App\Repository\ProductRepository;
 use App\Repository\PromotionLoyaltyRepository;
 use App\Service\ServiceImpl\ProductServiceImpl;
 use App\Service\ServiceImpl\PromotionLoyaltyServiceImpl;
+use App\Mapper\ProductItemMapper;
 
 class PromotionMapper
 {
@@ -29,35 +30,36 @@ class PromotionMapper
         $this->promotionLoyaltyService = $promotionLoyaltyService;
     }
 
-    public function toEntity(PromotionRequest $dto): Promotion
+    public function toEntity(PromotionRequest $dto , $productsById)
     {
         $promotion = new Promotion();
 
         $promotionLoyalty = $this->promotionLoyaltyRepository->find($dto->promotionLoyalty);
-        $product = $this->productRepository->find($dto->product);
+        $promotion->setPromotionLoyalty($promotionLoyalty);
 
-        return $promotion
-            ->setPromotionLoyalty($promotionLoyalty)
-            ->setProduct($product);
+        foreach ($dto->productItems as $itemDto)
+        {
+        $product = $productsById[$itemDto->productId] ?? null;
+        if (!$product) throw new \Exception("Product not found: " . $itemDto->productId);
+
+        $productItem = ProductItemMapper::toEntity($itemDto, $product);
+        $promotion->addProductItem($productItem);
+        }
+
+        return $promotion;
+
     }
 
-    public function toResponse(Promotion $promotion): PromotionResponse
+    public function toResponse(Promotion $promotion ): PromotionResponse
     {
+        $productItem = $promotion->getProductItems()->map(fn($item) => ProductItemMapper::toResponse($item))->toArray();
+        
         $dto = new PromotionResponse();
         $dto->id = $promotion->getId();
         $dto->promotionLoyalty = $this->promotionLoyaltyService->findById($promotion->getPromotionLoyalty()->getId());
-        $dto->product = $this->productService->findById($promotion->getProduct()->getId());
+        $dto->productItems = $productItem;
 
         return $dto;
     }
 
-    public function update(Promotion $promotion, PromotionRequest $dto): Promotion
-    {
-        $promotionLoyalty = $this->promotionLoyaltyRepository->find($dto->promotionLoyalty);
-        $product = $this->productRepository->find($dto->product);
-
-        return $promotion
-            ->setPromotionLoyalty($promotionLoyalty)
-            ->setProduct($product);
-    }
 }
