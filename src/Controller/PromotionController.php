@@ -24,81 +24,83 @@ class PromotionController extends AbstractController
         $this->serializer = $serializer;
     }
 
-    // GET all
-    #[Route('', name: 'promotion_list', methods: ['GET'])]
+    /* ================= GET ALL ================= */
+
+    #[Route('', methods: ['GET'])]
     public function list(): JsonResponse
     {
-        $promotions = $this->service->findAll();
-        return new JsonResponse($promotions);
+        return $this->json($this->service->findAll());
     }
 
-    // GET by ID
-    #[Route('/{id}', name: 'promotion_get', methods: ['GET'])]
+    /* ================= GET BY ID ================= */
+
+    #[Route('/{id}', methods: ['GET'])]
     public function get(int $id): JsonResponse
     {
         $promotion = $this->service->findById($id);
 
         if (!$promotion) {
-            return new JsonResponse(['message' => 'Promotion not found'], 404);
+            return $this->json(['message' => 'Promotion not found'], 404);
         }
 
-        return new JsonResponse($promotion);
+        return $this->json($promotion);
     }
 
-    // POST create
-    #[Route('', name: 'promotion_create', methods: ['POST'])]
+    /* ================= CREATE ================= */
+
+    #[Route('', methods: ['POST'])]
     public function create(Request $request): JsonResponse
     {
-        /** @var PromotionRequest $promotionRequest */
-        $promotionRequest = $this->serializer->deserialize(
+        /** @var PromotionRequest $dto */
+        $dto = $this->serializer->deserialize(
             $request->getContent(),
             PromotionRequest::class,
             'json'
         );
 
-        if (empty($promotionRequest->promotionLoyalty) || empty($promotionRequest->product)) {
-            return new JsonResponse(['message' => 'Invalid promotion data'], 400);
+        if (!$dto->promotionLoyalty || empty($dto->productItems)) {
+            return $this->json(['message' => 'promotionLoyalty and productItems are required'], 400);
         }
 
-        $promotion = $this->service->save($promotionRequest);
+        $promotion = $this->service->save($dto);
 
-        return new JsonResponse($promotion, 201);
+        return $this->json($promotion, 201);
     }
 
-    // PUT update
-    #[Route('/{id}', name: 'promotion_update', methods: ['PUT'])]
+    /* ================= UPDATE ================= */
+
+    #[Route('/{id}', methods: ['PUT'])]
     public function update(int $id, Request $request): JsonResponse
     {
-        /** @var PromotionRequest $promotionRequest */
-        $promotionRequest = $this->serializer->deserialize(
+        /** @var PromotionRequest $dto */
+        $dto = $this->serializer->deserialize(
             $request->getContent(),
             PromotionRequest::class,
             'json'
         );
 
-        if (empty($promotionRequest->promotionLoyalty) || empty($promotionRequest->product)) {
-            return new JsonResponse(['message' => 'Invalid promotion data'], 400);
+        if (!$dto->promotionLoyalty || empty($dto->productItems)) {
+            return $this->json(['message' => 'promotionLoyalty and productItems are required'], 400);
         }
 
-        $promotion = $this->service->update($id, $promotionRequest);
+        $promotion = $this->service->update($id, $dto);
 
         if (!$promotion) {
-            return new JsonResponse(['message' => 'Promotion not found'], 404);
+            return $this->json(['message' => 'Promotion not found'], 404);
         }
 
-        return new JsonResponse($promotion);
+        return $this->json($promotion);
     }
 
-    // DELETE
-    #[Route('/{id}', name: 'promotion_delete', methods: ['DELETE'])]
+    /* ================= DELETE ================= */
+
+    #[Route('/{id}', methods: ['DELETE'])]
     public function delete(int $id): JsonResponse
     {
-        $deleted = $this->service->delete($id);
-
-        if (!$deleted) {
-            return new JsonResponse(['message' => 'Promotion not found'], 404);
+        if (!$this->service->delete($id)) {
+            return $this->json(['message' => 'Promotion not found'], 404);
         }
 
-        return new JsonResponse(['message' => 'Promotion deleted']);
+        return $this->json(['message' => 'Promotion deleted']);
     }
 }
