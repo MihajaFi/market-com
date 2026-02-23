@@ -3,22 +3,27 @@
 namespace App\Controller;
 
 use App\Dto\Request\ProductRequest;
+use App\Dto\Request\SellRequest;
 use App\Service\ServiceImpl\ProductServiceImpl;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
+use App\Mapper\ProductMapper;
+use App\Service\ServiceImpl\SellServiceImpl;
 
     #[Route('/api/products')]
 class ProductController extends AbstractController
     {
-    private ProductServiceImpl $service;
+    private ProductServiceImpl  $service;
+    private SellServiceImpl $sellService;
     private SerializerInterface $serializer;
 
-    public function __construct(ProductServiceImpl $service, SerializerInterface $serializer)
+    public function __construct(ProductServiceImpl $service,SellServiceImpl $sellService, SerializerInterface $serializer)
     {
         $this->service = $service;
+        $this->sellService = $sellService;
         $this->serializer = $serializer;
     }
 
@@ -41,9 +46,9 @@ class ProductController extends AbstractController
         return new JsonResponse($product);
     }
 
-    #[Route('', name: 'product_create', methods: ['POST'])]
+         #[Route('', name: 'product_create', methods: ['POST'])]
     public function create(Request $request): JsonResponse
-   {
+    { 
     $dto = new ProductRequest();
 
     $dto->name = $request->request->get('name');
@@ -51,6 +56,15 @@ class ProductController extends AbstractController
     $dto->category = $request->request->get('category');
     $dto->price = (float)$request->request->get('price');
     $dto->image = $request->files->get('image');
+    $dto->merchantId = (int)$request->request->get('merchantId');
+
+    if ($dto->merchantId <= 0) {
+        return new JsonResponse([
+            'message' => 'Invalid merchantId', 
+            'received' => $request->request->get('merchantId'),
+            'converted' => $dto->merchantId
+        ], 400);
+    }
 
     if (empty($dto->name) || empty($dto->description) || $dto->price <= 0) {
         return new JsonResponse(['message' => 'Invalid product data'], 400);
@@ -64,14 +78,33 @@ class ProductController extends AbstractController
             $this->getParameter('product_images_dir'),
             $fileName
         );
-
         $imagePath = '/uploads/products/'.$fileName;
     }
 
     $product = $this->service->register($dto, $imagePath);
 
-    return new JsonResponse($product, 201);
+    if (!isset($product->id) || $product->id <= 0) {
+        return new JsonResponse(['message' => 'Product creation failed'], 500);
     }
+
+    $sellRequest = new SellRequest();
+    $sellRequest->merchantId = $dto->merchantId; 
+    $sellRequest->productId = $product->id;
+    
+    dump('merchantId: ' . $sellRequest->merchantId);
+    dump('productId: ' . $sellRequest->productId);
+
+    try {
+        $sell = $this->sellService->save($sellRequest);
+    } catch (\Exception $e) {
+        return new JsonResponse([
+            'message' => 'Sell creation failed',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+
+    return new JsonResponse($product, 201);
+}
 
    #[Route('/{id}', name: 'product_update', methods: ['PUT'])]
     public function update(int $id, Request $request): JsonResponse
@@ -83,6 +116,7 @@ class ProductController extends AbstractController
     $dto->price = (float)$request->request->get('price');
     $dto->category = $request->request->get('category');
     $dto->image = $request->files->get('image');
+    $dto->merchantId = (int)$request->request->get('merchantId');
 
     if (empty($dto->name) || empty($dto->description) || $dto->price <= 0) {
         return new JsonResponse(['message' => 'Invalid product data'], 400);

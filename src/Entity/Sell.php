@@ -1,0 +1,49 @@
+<?php
+
+namespace App\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+ #[ORM\Entity]
+class Sell
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(name: 'id_merchant', nullable: false)]
+    private ?Merchant $merchant = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(name: 'id_product', nullable: false)]
+    private ?Product $product = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getMerchant(): ?Merchant
+    {
+        return $this->merchant;
+    }
+
+    public function setMerchant(?Merchant $merchant): self
+    {
+        $this->merchant = $merchant;
+        return $this;
+    }
+
+    public function getProduct(): ?Product
+    {
+        return $this->product;
+    }
+
+    public function setProduct(?Product $product): self
+    {
+        $this->product = $product;
+        return $this;
+    }
+}

@@ -33,9 +33,13 @@ class Product
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $image = null;
 
+    #[ORM\OneToMany(mappedBy: 'product', targetEntity: Sell::class)]
+    private Collection $sells;
+
     public function __construct()
     {
         $this->stocks = new ArrayCollection();
+        $this->sells = new ArrayCollection();
     }
 
     public function getStocks(): Collection
@@ -43,6 +47,10 @@ class Product
         return $this->stocks;
     }
 
+    public function getSells(): Collection
+    {
+    return $this->sells;
+} 
     public function addStock(Stock $stock): self
     {
         if (!$this->stocks->contains($stock)) {

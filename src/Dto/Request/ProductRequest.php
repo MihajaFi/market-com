@@ -13,6 +13,9 @@ class ProductRequest
     #[Assert\NotBlank(message: 'La description du produit est obligatoire')]
     public string $description = '';
 
+    #[Assert\NotBlank(message: 'L\'ID du marchand est requis')]
+    public int $merchantId;
+
     #[Assert\NotBlank(message: 'La catégorie du produit est obligatoire')]
     public string $category = '';
 
