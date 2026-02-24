@@ -3,18 +3,26 @@
 namespace App\Controller;
  
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HttpFoundation\Response;
+use App\Service\ServiceImpl\DashboardServiceImpl;
  
-#[Route('/api', name: 'api_')]
+#[Route('/api/dashboard')]
 class DashboardController extends AbstractController
 {
-    #[Route('/dashboard', name: 'app_dashboard')]
-    public function index(): JsonResponse
+     private DashboardServiceImpl $service;
+     
+    public function __construct(DashboardServiceImpl $service)
     {
-        return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/DashboardController.php',
-        ]);
+        $this->service = $service;
     }
+
+    #[Route('', name: 'app_dashboard')]
+    public function index(): Response
+    {
+        $result = $this->service->getDashboard();
+        return$this->json($result);
+    }
+
+
 }
