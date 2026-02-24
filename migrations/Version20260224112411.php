@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20260223202925 extends AbstractMigration
+final class Version20260224112411 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -27,6 +27,7 @@ final class Version20260223202925 extends AbstractMigration
         $this->addSql('CREATE TABLE product_item (id INT AUTO_INCREMENT NOT NULL, id_product INT NOT NULL, id_promotion INT NOT NULL, INDEX IDX_92F307BFDD7ADDD (id_product), INDEX IDX_92F307BF4128C1F6 (id_promotion), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
         $this->addSql('CREATE TABLE promotion (id INT AUTO_INCREMENT NOT NULL, type VARCHAR(20) NOT NULL, status VARCHAR(20) NOT NULL, id_promotion_loyalty INT NOT NULL, INDEX IDX_C11D7DD1D58D8FBB (id_promotion_loyalty), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
         $this->addSql('CREATE TABLE promotion_loyalty (id INT AUTO_INCREMENT NOT NULL, promotion_type VARCHAR(255) DEFAULT NULL, value DOUBLE PRECISION DEFAULT NULL, start_date DATETIME DEFAULT NULL, end_date DATETIME DEFAULT NULL, conditions VARCHAR(255) DEFAULT NULL, PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
+        $this->addSql('CREATE TABLE sell (id INT AUTO_INCREMENT NOT NULL, id_merchant INT NOT NULL, id_product INT NOT NULL, INDEX IDX_9B9ED07D2470C974 (id_merchant), INDEX IDX_9B9ED07DDD7ADDD (id_product), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
         $this->addSql('CREATE TABLE stock (id INT AUTO_INCREMENT NOT NULL, quantity INT NOT NULL, alert VARCHAR(250) NOT NULL, id_product INT NOT NULL, INDEX IDX_4B365660DD7ADDD (id_product), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
         $this->addSql('CREATE TABLE user (id INT AUTO_INCREMENT NOT NULL, email VARCHAR(180) NOT NULL, username VARCHAR(180) NOT NULL, roles JSON NOT NULL, password VARCHAR(255) NOT NULL, UNIQUE INDEX UNIQ_8D93D649E7927C74 (email), UNIQUE INDEX UNIQ_8D93D649F85E0677 (username), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
         $this->addSql('ALTER TABLE order_item ADD CONSTRAINT FK_52EA1F09DD7ADDD FOREIGN KEY (id_product) REFERENCES product (id)');
@@ -36,6 +37,8 @@ final class Version20260223202925 extends AbstractMigration
         $this->addSql('ALTER TABLE product_item ADD CONSTRAINT FK_92F307BFDD7ADDD FOREIGN KEY (id_product) REFERENCES product (id)');
         $this->addSql('ALTER TABLE product_item ADD CONSTRAINT FK_92F307BF4128C1F6 FOREIGN KEY (id_promotion) REFERENCES promotion (id)');
         $this->addSql('ALTER TABLE promotion ADD CONSTRAINT FK_C11D7DD1D58D8FBB FOREIGN KEY (id_promotion_loyalty) REFERENCES promotion_loyalty (id)');
+        $this->addSql('ALTER TABLE sell ADD CONSTRAINT FK_9B9ED07D2470C974 FOREIGN KEY (id_merchant) REFERENCES merchants (id)');
+        $this->addSql('ALTER TABLE sell ADD CONSTRAINT FK_9B9ED07DDD7ADDD FOREIGN KEY (id_product) REFERENCES product (id)');
         $this->addSql('ALTER TABLE stock ADD CONSTRAINT FK_4B365660DD7ADDD FOREIGN KEY (id_product) REFERENCES product (id)');
     }
 
@@ -49,6 +52,8 @@ final class Version20260223202925 extends AbstractMigration
         $this->addSql('ALTER TABLE product_item DROP FOREIGN KEY FK_92F307BFDD7ADDD');
         $this->addSql('ALTER TABLE product_item DROP FOREIGN KEY FK_92F307BF4128C1F6');
         $this->addSql('ALTER TABLE promotion DROP FOREIGN KEY FK_C11D7DD1D58D8FBB');
+        $this->addSql('ALTER TABLE sell DROP FOREIGN KEY FK_9B9ED07D2470C974');
+        $this->addSql('ALTER TABLE sell DROP FOREIGN KEY FK_9B9ED07DDD7ADDD');
         $this->addSql('ALTER TABLE stock DROP FOREIGN KEY FK_4B365660DD7ADDD');
         $this->addSql('DROP TABLE merchants');
         $this->addSql('DROP TABLE order_item');
@@ -57,6 +62,7 @@ final class Version20260223202925 extends AbstractMigration
         $this->addSql('DROP TABLE product_item');
         $this->addSql('DROP TABLE promotion');
         $this->addSql('DROP TABLE promotion_loyalty');
+        $this->addSql('DROP TABLE sell');
         $this->addSql('DROP TABLE stock');
         $this->addSql('DROP TABLE user');
     }
