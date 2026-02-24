@@ -17,7 +17,7 @@ class LoginSuccessListener
                 'id' => $user->getId(),
                 'name' => $user->getUsername(),
                 'email' => $user->getEmail(),
-                'role' => $user->getRoles()[0] ?? 'client',
+                'roles' => $user->getRoles(),
             ];
         }
 
