@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Stock;
+use App\Entity\Sell;
 
 #[ORM\Entity]
 class Product
@@ -33,7 +34,7 @@ class Product
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $image = null;
 
-    #[ORM\OneToMany(mappedBy: 'product', targetEntity: Sell::class)]
+    #[ORM\OneToMany(mappedBy: 'product', targetEntity: Sell::class, cascade: ['remove'], orphanRemoval: true)]
     private Collection $sells;
 
     public function __construct()
