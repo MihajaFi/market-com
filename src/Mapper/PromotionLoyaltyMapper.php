@@ -13,8 +13,8 @@ class PromotionLoyaltyMapper
         return (new PromotionLoyalty())
             ->setPromotionType($dto->promotion_type)
             ->setValue($dto->value)
-            ->setStartDate($dto->start_date)
-            ->setEndDate($dto->end_date)
+            ->setStartDate(new \DateTime($dto->start_date))
+            ->setEndDate(new \DateTime($dto->end_date))    
             ->setConditions($dto->conditions);
     }
 
@@ -24,8 +24,12 @@ class PromotionLoyaltyMapper
         $dto->id = $promotionLoyalty->getId();
         $dto->promotion_type = $promotionLoyalty->getPromotionType();
         $dto->value = $promotionLoyalty->getValue();
-        $dto->start_date = $promotionLoyalty->getStartDate();
-        $dto->end_date = $promotionLoyalty->getEndDate();
+        $dto->start_date = $promotionLoyalty->getStartDate()
+        ->setTimezone(new \DateTimeZone('Indian/Antananarivo'))
+        ->format('d/m/Y H:i:s');
+        $dto->end_date = $promotionLoyalty->getEndDate()
+        ->setTimezone(new \DateTimeZone('Indian/Antananarivo'))
+        ->format('d/m/Y H:i:s');
         $dto->conditions = $promotionLoyalty->getConditions(); 
 
         return $dto;
@@ -36,8 +40,8 @@ class PromotionLoyaltyMapper
         return $promotionLoyalty
             ->setPromotionType($dto->promotion_type)
             ->setValue($dto->value)
-            ->setStartDate($dto->start_date)
-            ->setEndDate($dto->end_date)
+            ->setStartDate(new \DateTime($dto->start_date)) 
+            ->setEndDate(new \DateTime($dto->end_date))     
             ->setConditions($dto->conditions);
     }
 }

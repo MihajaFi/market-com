@@ -10,17 +10,23 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/api/PromotionLoyaltys')]
 class PromotionLoyaltyController extends AbstractController
 {
     private PromotionLoyaltyServiceImpl $service;
     private SerializerInterface $serializer;
+    private ValidatorInterface $validator;
 
-    public function __construct(PromotionLoyaltyServiceImpl $service, SerializerInterface $serializer)
-    {
+    public function __construct(
+        PromotionLoyaltyServiceImpl $service,
+        SerializerInterface $serializer,
+        ValidatorInterface $validator
+    ) {
         $this->service = $service;
         $this->serializer = $serializer;
+        $this->validator = $validator;
     }
 
     // GET all
@@ -28,7 +34,7 @@ class PromotionLoyaltyController extends AbstractController
     public function list(): JsonResponse
     {
         $PromotionLoyaltys = $this->service->findAll();
-        return new JsonResponse($PromotionLoyaltys); 
+        return new JsonResponse($PromotionLoyaltys);
     }
 
     // GET by ID
@@ -51,9 +57,17 @@ class PromotionLoyaltyController extends AbstractController
             PromotionLoyaltyRequest::class,
             'json'
         );
-        if (empty($PromotionLoyaltyRequest->name) || empty($PromotionLoyaltyRequest->description) || $PromotionLoyaltyRequest->price <= 0) {
-            return new JsonResponse(['message' => 'Invalid PromotionLoyalty data'], 400);
+
+        // Validation Symfony
+        $errors = $this->validator->validate($PromotionLoyaltyRequest);
+        if (count($errors) > 0) {
+            $messages = [];
+            foreach ($errors as $error) {
+                $messages[] = $error->getMessage();
+            }
+            return new JsonResponse(['errors' => $messages], 400);
         }
+
         $PromotionLoyalty = $this->service->save($PromotionLoyaltyRequest);
         return new JsonResponse($PromotionLoyalty, 201);
     }
@@ -67,9 +81,16 @@ class PromotionLoyaltyController extends AbstractController
             PromotionLoyaltyRequest::class,
             'json'
         );
-        if (empty($PromotionLoyaltyRequest->name) || empty($PromotionLoyaltyRequest->description) || $PromotionLoyaltyRequest->price <= 0) {
-            return new JsonResponse(['message' => 'Invalid PromotionLoyalty data'], 400);
+
+        $errors = $this->validator->validate($PromotionLoyaltyRequest);
+        if (count($errors) > 0) {
+            $messages = [];
+            foreach ($errors as $error) {
+                $messages[] = $error->getMessage();
+            }
+            return new JsonResponse(['errors' => $messages], 400);
         }
+
         $PromotionLoyalty = $this->service->update($id, $PromotionLoyaltyRequest);
         if (!$PromotionLoyalty) {
             return new JsonResponse(['message' => 'PromotionLoyalty not found'], 404);

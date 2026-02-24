@@ -10,7 +10,7 @@ class PromotionLoyaltyResponse
     public string $promotion_type;
     public string $description;
     public float $value;
-    public DateTime $start_date;
-    public DateTime $end_date;
+    public string $start_date;
+    public string $end_date;
     public string $conditions;
 }
