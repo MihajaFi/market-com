@@ -13,10 +13,8 @@ class PromotionLoyaltyRequest
     #[Assert\Positive(message: 'La valeur de la promotion doit être supérieure à 0')]
     public float $value = 0.0;
 
-    #[Assert\DateTime(message: 'Date et heure gere automatiquement')]
-    public DateTime $start_date;
-    public DateTime $end_date;
-
+    public string $start_date;
+    public string $end_date;
     #[Assert\NotBlank(message: 'conditions est obligatoire')]
     public string $conditions = '';
 }
