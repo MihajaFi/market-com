@@ -38,8 +38,8 @@ class CreateAdminCommand extends Command
         }
 
         $admin = new User();
-        $admin->setEmail('admin@example.com');
-        $admin->setUsername('admin');
+        $admin->setEmail('admin1@example.com');
+        $admin->setUsername('admin1@example.com');
         $admin->setPassword($this->passwordHasher->hashPassword($admin, 'Admin123!'));
         $admin->setRoles(['ROLE_ADMIN']);
 
