@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20260223170023 extends AbstractMigration
+final class Version20260224230904 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -25,7 +25,7 @@ final class Version20260223170023 extends AbstractMigration
         $this->addSql('CREATE TABLE orders (id INT AUTO_INCREMENT NOT NULL, order_date DATE NOT NULL, total_amount DOUBLE PRECISION NOT NULL, status VARCHAR(25) NOT NULL, address LONGTEXT NOT NULL, phone LONGTEXT NOT NULL, payment_method LONGTEXT NOT NULL, merchant_id INT NOT NULL, id_user INT NOT NULL, INDEX IDX_E52FFDEE6796D554 (merchant_id), INDEX IDX_E52FFDEE6B3CA4B (id_user), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
         $this->addSql('CREATE TABLE product (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(255) NOT NULL, description LONGTEXT NOT NULL, category LONGTEXT NOT NULL, price DOUBLE PRECISION NOT NULL, image VARCHAR(255) DEFAULT NULL, PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
         $this->addSql('CREATE TABLE product_item (id INT AUTO_INCREMENT NOT NULL, id_product INT NOT NULL, id_promotion INT NOT NULL, INDEX IDX_92F307BFDD7ADDD (id_product), INDEX IDX_92F307BF4128C1F6 (id_promotion), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
-        $this->addSql('CREATE TABLE promotion (id INT AUTO_INCREMENT NOT NULL, id_promotion_loyalty INT NOT NULL, INDEX IDX_C11D7DD1D58D8FBB (id_promotion_loyalty), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
+        $this->addSql('CREATE TABLE promotion (id INT AUTO_INCREMENT NOT NULL, type VARCHAR(20) NOT NULL, status VARCHAR(20) NOT NULL, id_promotion_loyalty INT NOT NULL, INDEX IDX_C11D7DD1D58D8FBB (id_promotion_loyalty), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
         $this->addSql('CREATE TABLE promotion_loyalty (id INT AUTO_INCREMENT NOT NULL, promotion_type VARCHAR(255) DEFAULT NULL, value DOUBLE PRECISION DEFAULT NULL, start_date DATETIME DEFAULT NULL, end_date DATETIME DEFAULT NULL, conditions VARCHAR(255) DEFAULT NULL, PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
         $this->addSql('CREATE TABLE sell (id INT AUTO_INCREMENT NOT NULL, id_merchant INT NOT NULL, id_product INT NOT NULL, INDEX IDX_9B9ED07D2470C974 (id_merchant), INDEX IDX_9B9ED07DDD7ADDD (id_product), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
         $this->addSql('CREATE TABLE stock (id INT AUTO_INCREMENT NOT NULL, quantity INT NOT NULL, alert VARCHAR(250) NOT NULL, id_product INT NOT NULL, INDEX IDX_4B365660DD7ADDD (id_product), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
