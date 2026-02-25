@@ -5,19 +5,22 @@ namespace App\Mapper;
 use App\Dto\Request\SellRequest;
 use App\Dto\Response\SellResponse;
 use App\Entity\Sell;
-
+use App\Entity\Merchant;
+use App\Entity\Product;
 
 class SellMapper
 {
     public static function toEntity(
         SellRequest $dto,
-        $merchant,
-        $product
+        Merchant $merchant,
+        Product $product
     ): Sell {
         $sell = new Sell();
 
         $sell->setMerchant($merchant);
         $sell->setProduct($product);
+        $sell->setTotalSales($dto->getTotalSales());
+        
         return $sell;
     }
 
@@ -26,7 +29,8 @@ class SellMapper
         return new SellResponse(
             $sell->getId(),
             $sell->getMerchant()->getId(),
-            $sell->getProduct()->getId()
+            $sell->getProduct()->getId(),
+            $sell->getTotalSales()
         );
     }
 }

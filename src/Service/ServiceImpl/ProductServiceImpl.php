@@ -8,18 +8,25 @@ use App\Mapper\ProductMapper;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Dto\Request\ProductRequest;
+use App\Repository\MerchantRepository;
 
 class ProductServiceImpl 
 {
     private ProductRepository $repository;
     private EntityManagerInterface $em;
+    private MerchantRepository $merchantRepo;
 
-    public function __construct(ProductRepository $repository, EntityManagerInterface $em, string $projectDir)
-    {
-        $this->repository = $repository;
-        $this->em = $em;
-        $this->projectDir = $projectDir;
-    }
+    public function __construct(
+    ProductRepository $repository,
+    MerchantRepository $merchantRepo,
+    EntityManagerInterface $em,
+    string $projectDir
+) {
+    $this->repository = $repository;
+    $this->merchantRepo = $merchantRepo;
+    $this->em = $em;
+    $this->projectDir = $projectDir;
+}
 
     public function findById(int $id): ?ProductResponse
     {
@@ -34,36 +41,48 @@ class ProductServiceImpl
     }
 
      public function register(object $dto, ?string $imagePath = null): ProductResponse
-    {
-        /** @var ProductRequest $dto */
-        $product = ProductMapper::toEntity($dto, $imagePath);
+{
+    /** @var ProductRequest $dto */
 
-        $this->em->persist($product);
-        $this->em->flush();
+    $merchant = $this->merchantRepo->find($dto->merchantId);
 
-        return ProductMapper::toResponse($product);
+    if (!$merchant) {
+        throw new \Exception("Merchant not found");
     }
 
-    public function update(int $id, object $dto, ?string $imagePath = null): ?ProductResponse
-    {
-        /** @var ProductRequest $dto */
+    $product = ProductMapper::toEntity($dto, $merchant, $imagePath);
 
-        $product = $this->repository->find($id);
-        if (!$product) {
-            return null;
-        }
+    $this->em->persist($product);
+    $this->em->flush();
 
-        $oldImage = $product->getImage();
+    return ProductMapper::toResponse($product);
+}
+   public function update(int $id, object $dto, ?string $imagePath = null): ?ProductResponse
+{
+    /** @var ProductRequest $dto */
 
-        ProductMapper::update($product, $dto, $imagePath);
-        if ($imagePath && $oldImage && $oldImage !== $imagePath) {
-            $this->deleteFile($oldImage);
-        }
+    $product = $this->repository->find($id);
+    if (!$product) return null;
 
-        $this->em->flush();
+    $merchant = $this->merchantRepo->find($dto->merchantId);
+    if (!$merchant) throw new \Exception("Merchant not found");
 
-        return ProductMapper::toResponse($product);
+    $oldImage = $product->getImage();
+
+    ProductMapper::update($product, $dto, $merchant);
+
+    if ($imagePath) {
+        $product->setImage($imagePath);
     }
+
+    if ($imagePath && $oldImage && $oldImage !== $imagePath) {
+        $this->deleteFile($oldImage);
+    }
+
+    $this->em->flush();
+
+    return ProductMapper::toResponse($product);
+}
 
     public function delete(int $id): bool
     {

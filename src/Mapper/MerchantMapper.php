@@ -43,8 +43,7 @@ class MerchantMapper
     {
          $response = new MerchantResponse();
          $response->name = $merchant->getName();
-         $response->totalSales =
-            $this->orderRepository->getTotalSalesByMerchant($merchant);
+         $response->totalSales =  $this->sellRepository->getTotalSalesByMerchant($merchant);
         
             return $response;
     }

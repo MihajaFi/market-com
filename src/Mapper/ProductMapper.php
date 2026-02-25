@@ -5,19 +5,23 @@ namespace App\Mapper;
 use App\Entity\Product;
 use App\Dto\Request\ProductRequest;
 use App\Dto\Response\ProductResponse;
+use App\Entity\Merchant;
 
 class ProductMapper
 {
-    public static function toEntity(ProductRequest $dto, ?string $imagePath = null): Product
-  {
-    return (new Product())
-        ->setName($dto->name)
-        ->setDescription($dto->description)
-        ->setCategory($dto->category)
-        ->setPrice($dto->price)
-        ->setImage($imagePath);
-  }
-
+    public static function toEntity(
+        ProductRequest $dto,
+        Merchant $merchant,
+        ?string $imagePath = null
+    ): Product {
+        return (new Product())
+            ->setName($dto->name)
+            ->setDescription($dto->description)
+            ->setCategory($dto->category)
+            ->setPrice($dto->price)
+            ->setImage($imagePath)
+            ->setMerchant($merchant);
+    }
 
     public static function toResponse(Product $product): ProductResponse
     {
@@ -32,26 +36,22 @@ class ProductMapper
         foreach ($product->getStocks() as $stock) {
             $totalQuantity += $stock->getQuantity();
         }
+
         $dto->stock = $totalQuantity;
         $dto->image = $product->getImage();
 
-       $merchantName = '';
-
-       foreach ($product->getSells() as $sell) {
-       $merchantName = $sell->getMerchant()->getName();
-        }
-
-       $dto->merchant = $merchantName;
+        $dto->merchant = $product->getMerchant()?->getName();
 
         return $dto;
     }
 
-    public static function update(Product $product, ProductRequest $dto): Product
+    public static function update(Product $product, ProductRequest $dto, Merchant $merchant): Product
     {
         return $product
             ->setName($dto->name)
             ->setDescription($dto->description)
             ->setCategory($dto->category)
-            ->setPrice($dto->price);
+            ->setPrice($dto->price)
+            ->setMerchant($merchant);
     }
 }
