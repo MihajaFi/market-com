@@ -159,4 +159,29 @@ public function create(Request $request): Response
             ['Content-Type' => 'application/json']
         );
     }
+    // PATCH update status only
+    #[Route('/{id}/status', name: 'order_update_status', methods: ['PATCH'])]
+    public function updateStatus(int $id, Request $request): Response
+    {
+    try {
+        $data = json_decode($request->getContent(), true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return $this->json(['message' => 'Invalid JSON: ' . json_last_error_msg()], 400);
+        }
+
+        if (!isset($data['status'])) {
+            return $this->json(['message' => 'Status is required'], 400);
+        }
+
+        $order = $this->service->updateStatus($id, $data['status']);
+
+        if (!$order) {
+            return $this->json(['message' => 'Order not found'], 404);
+        }
+
+        return $this->json($order, 200);
+    } catch (\Exception $e) {
+        return $this->json(['message' => $e->getMessage()], 500);
+    }
+    }
 }
