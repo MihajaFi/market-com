@@ -39,6 +39,16 @@ class MerchantMapper
         return $response;
     }
 
+    public function toResponseByMerchant(Merchant $merchant): MerchantResponse
+    {
+         $response = new MerchantResponse();
+         $response->name = $merchant->getName();
+         $response->totalSales =
+            $this->orderRepository->getTotalSalesByMerchant($merchant);
+        
+            return $response;
+    }
+
     public static function toEntity(MerchantRequest $dto): Merchant
     {
         return (new Merchant())
