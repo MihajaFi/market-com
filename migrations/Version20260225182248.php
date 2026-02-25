@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20260225164633 extends AbstractMigration
+final class Version20260225182248 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,6 +20,7 @@ final class Version20260225164633 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
+        $this->addSql('CREATE TABLE category (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(255) NOT NULL, description LONGTEXT DEFAULT NULL, color VARCHAR(7) NOT NULL, PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
         $this->addSql('CREATE TABLE merchants (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, phone VARCHAR(20) NOT NULL, city LONGTEXT NOT NULL, category LONGTEXT NOT NULL, status LONGTEXT NOT NULL, join_date DATETIME NOT NULL, avatar_color LONGTEXT NOT NULL, PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
         $this->addSql('CREATE TABLE order_item (id INT AUTO_INCREMENT NOT NULL, quantity INT NOT NULL, unit_price DOUBLE PRECISION NOT NULL, id_product INT NOT NULL, id_order INT NOT NULL, INDEX IDX_52EA1F09DD7ADDD (id_product), INDEX IDX_52EA1F091BACD2A8 (id_order), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
         $this->addSql('CREATE TABLE orders (id INT AUTO_INCREMENT NOT NULL, order_date DATE NOT NULL, total_amount DOUBLE PRECISION NOT NULL, status VARCHAR(25) NOT NULL, address LONGTEXT NOT NULL, phone LONGTEXT NOT NULL, payment_method LONGTEXT NOT NULL, id_user INT NOT NULL, INDEX IDX_E52FFDEE6B3CA4B (id_user), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
@@ -53,6 +54,7 @@ final class Version20260225164633 extends AbstractMigration
         $this->addSql('ALTER TABLE sell DROP FOREIGN KEY FK_9B9ED07D2470C974');
         $this->addSql('ALTER TABLE sell DROP FOREIGN KEY FK_9B9ED07DDD7ADDD');
         $this->addSql('ALTER TABLE stock DROP FOREIGN KEY FK_4B365660DD7ADDD');
+        $this->addSql('DROP TABLE category');
         $this->addSql('DROP TABLE merchants');
         $this->addSql('DROP TABLE order_item');
         $this->addSql('DROP TABLE orders');
