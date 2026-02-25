@@ -13,6 +13,7 @@ use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Service\ServiceInterface;
 use App\Repository\MerchantRepository; 
+use App\Service\ServiceImpl\SellServiceImpl;
 
 class OrderServiceImpl implements ServiceInterface
 {
@@ -21,19 +22,22 @@ class OrderServiceImpl implements ServiceInterface
     private MerchantRepository $merchantRepo;
     private ProductRepository $productRepo;
     private EntityManagerInterface $em;
+    private SellServiceImpl $sellServiceImpl;
 
     public function __construct(
         OrderRepository $orderRepo,
         UserRepository $userRepo,
         ProductRepository $productRepo,
         EntityManagerInterface $em,
-        MerchantRepository $merchantRepo
+        MerchantRepository $merchantRepo,
+        SellServiceImpl $sellServiceImpl
     ) {
         $this->orderRepo = $orderRepo;
         $this->userRepo = $userRepo;
         $this->productRepo = $productRepo;
         $this->em = $em;
         $this->merchantRepo = $merchantRepo;
+        $this->sellServiceImpl = $sellServiceImpl ;
     }
 
     public function findById(int $id): ?OrderResponse
@@ -66,15 +70,24 @@ class OrderServiceImpl implements ServiceInterface
     $order = OrderMapper::toEntity($dto, $user, $productsById);
 
     if ($order->getStatus() === 'PAID') {
-        foreach ($order->getItems() as $item) {
-            $product = $item->getProduct();
-            $stock = $product->getStocks()->first(); 
-            if ($stock->getQuantity() < $item->getQuantity()) {
-                throw new \Exception("Stock insuffisant pour le produit " . $product->getName());
-            }
-            $stock->setQuantity($stock->getQuantity() - $item->getQuantity());
+
+    foreach ($order->getItems() as $item) {
+
+        $product = $item->getProduct();
+        $stock = $product->getStocks()->first();
+
+        if ($stock->getQuantity() < $item->getQuantity()) {
+            throw new \Exception("Stock insuffisant pour le produit " . $product->getName());
         }
+
+        $stock->setQuantity($stock->getQuantity() - $item->getQuantity());
+
+        $this->sellServiceImpl->createFromOrderItem(
+            $product,
+            $item->getSubTotal()
+        );
     }
+}
 
     $this->em->persist($order);
     $this->em->flush();
@@ -84,8 +97,8 @@ class OrderServiceImpl implements ServiceInterface
    }
 
 
-    public function update(int $id, object $dto): ?OrderResponse
-   {
+   public function update(int $id, object $dto): ?OrderResponse
+{
     $order = $this->orderRepo->find($id);
     if (!$order) return null;
 
@@ -93,15 +106,14 @@ class OrderServiceImpl implements ServiceInterface
         throw new \InvalidArgumentException("DTO must be OrderAndOrderItemRequest");
     }
 
+    $oldStatus = $order->getStatus();
+    $newStatus = $dto->status;
+
     $user = $this->userRepo->find($dto->userId);
     if (!$user) throw new \Exception("User not found");
 
-    $productIds = array_map(fn($i) => $i->productId, $dto->items);
-    $products = $this->productRepo->findBy(['id' => $productIds]);
-    $productsById = [];
-    foreach ($products as $p) $productsById[$p->getId()] = $p;
 
-    if ($order->getStatus() === 'PAID') {
+    if ($oldStatus === 'PAID') {
         foreach ($order->getItems() as $item) {
             $stock = $item->getProduct()->getStocks()->first();
             $stock->setQuantity($stock->getQuantity() + $item->getQuantity());
@@ -113,10 +125,19 @@ class OrderServiceImpl implements ServiceInterface
     }
     $order->getItems()->clear();
 
-    $order->setUser($user)->setStatus($dto->status)
-        ->setAddress($dto->address)
-        ->setPhone($dto->phone)
-         ->setPaymentMethod($dto->paymentMethod);
+   
+    $order->setUser($user)
+          ->setStatus($newStatus)
+          ->setAddress($dto->address)
+          ->setPhone($dto->phone)
+          ->setPaymentMethod($dto->paymentMethod);
+
+   
+    $productIds = array_map(fn($i) => $i->productId, $dto->items);
+    $products = $this->productRepo->findBy(['id' => $productIds]);
+
+    $productsById = [];
+    foreach ($products as $p) $productsById[$p->getId()] = $p;
 
     foreach ($dto->items as $itemDto) {
         $product = $productsById[$itemDto->productId] ?? null;
@@ -126,23 +147,47 @@ class OrderServiceImpl implements ServiceInterface
         $order->addItem($orderItem);
     }
 
-    $total = array_reduce($order->getItems()->toArray(), fn($carry, $i) => $carry + $i->getSubTotal(), 0);
+    
+    $total = array_reduce(
+        $order->getItems()->toArray(),
+        fn($carry, $i) => $carry + $i->getSubTotal(),
+        0
+    );
     $order->setTotalAmount($total);
 
-    if ($order->getStatus() === 'PAID') {
+  
+    if ($oldStatus === 'PAID' && $newStatus !== 'PAID') {
         foreach ($order->getItems() as $item) {
-            $stock = $item->getProduct()->getStocks()->first();
-            if ($stock->getQuantity() < $item->getQuantity()) {
-                throw new \Exception("Stock insuffisant pour le produit " . $item->getProduct()->getName());
-            }
-            $stock->setQuantity($stock->getQuantity() - $item->getQuantity());
+            $this->sellServiceImpl->deleteByProduct($item->getProduct());
         }
     }
 
+   
+    if ($oldStatus !== 'PAID' && $newStatus === 'PAID') {
+        foreach ($order->getItems() as $item) {
+            $this->sellServiceImpl->createFromOrderItem(
+                $item->getProduct(),
+                $item->getSubTotal()
+            );
+        }
+    }
+
+    if ($newStatus === 'PAID') {
+        foreach ($order->getItems() as $item) {
+            $stock = $item->getProduct()->getStocks()->first();
+
+            if ($stock->getQuantity() < $item->getQuantity()) {
+                throw new \Exception("Stock insuffisant pour " . $item->getProduct()->getName());
+            }
+
+            $stock->setQuantity($stock->getQuantity() - $item->getQuantity());
+        }
+    }
+    
     $this->em->flush();
 
     return OrderMapper::toResponse($order);
-    }
+}
 
 
     public function delete(int $id): bool
@@ -151,10 +196,13 @@ class OrderServiceImpl implements ServiceInterface
     if (!$order) return false;
 
     if ($order->getStatus() === 'PAID') {
-        foreach ($order->getItems() as $item) {
-            $stock = $item->getProduct()->getStocks()->first();
-            $stock->setQuantity($stock->getQuantity() + $item->getQuantity());
-        }
+    foreach ($order->getItems() as $item) {
+
+        $stock = $item->getProduct()->getStocks()->first();
+        $stock->setQuantity($stock->getQuantity() + $item->getQuantity());
+
+        $this->sellServiceImpl->deleteByProduct($item->getProduct());
+    }
     }
 
     $this->em->remove($order);

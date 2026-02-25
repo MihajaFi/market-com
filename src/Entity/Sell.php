@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
- #[ORM\Entity]
+#[ORM\Entity]
 class Sell
 {
     #[ORM\Id]
@@ -19,6 +19,9 @@ class Sell
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(name: 'id_product', nullable: false)]
     private ?Product $product = null;
+
+    #[ORM\Column(name: 'total_sales', type: 'decimal', precision: 10, scale: 2, nullable: false)]
+    private ?float $totalSales = null;
 
     public function getId(): ?int
     {
@@ -44,6 +47,17 @@ class Sell
     public function setProduct(?Product $product): self
     {
         $this->product = $product;
+        return $this;
+    }
+
+    public function getTotalSales(): ?float
+    {
+        return $this->totalSales;
+    }
+
+    public function setTotalSales(float $totalSales): self
+    {
+        $this->totalSales = $totalSales;
         return $this;
     }
 }

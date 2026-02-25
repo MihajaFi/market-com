@@ -8,6 +8,7 @@ use App\Service\ServiceInterface;
 use App\Dto\Response\SellResponse;
 use App\Mapper\SellMapper;
 use App\Entity\Sell;
+use App\Entity\Product;
 use App\Dto\Request\SellRequest;
 use App\Repository\MerchantRepository;
 use App\Repository\ProductRepository;
@@ -118,5 +119,25 @@ class SellServiceImpl implements ServiceInterface
     {
         $sell = $this->repository->findOneBy(['product' => $productId]);
         return $sell && $sell->getMerchant() ? $sell->getMerchant()->getName() : null;
+    }
+
+    public function createFromOrderItem(Product $product, float $amount): void
+   {
+    $sell = new Sell();
+
+    $sell->setMerchant($product->getMerchant());
+    $sell->setProduct($product);
+    $sell->setTotalSales($amount);
+
+    $this->em->persist($sell);
+    }
+
+    public function deleteByProduct(Product $product): void
+    {
+    $sells = $this->repository->findBy(['product' => $product]);
+
+    foreach ($sells as $sell) {
+        $this->em->remove($sell);
+    }
     }
 }

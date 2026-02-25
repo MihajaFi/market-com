@@ -22,6 +22,10 @@ class Product
     #[ORM\Column(type: 'text')]
     private string $description;
 
+    #[ORM\ManyToOne(targetEntity: Merchant::class)]
+    #[ORM\JoinColumn(name: 'id_merchant', nullable: false)]
+    private ?Merchant $merchant = null;
+
     #[ORM\Column(type: 'text')]
     private string $category;
 
@@ -88,4 +92,14 @@ class Product
     public function getCategory(): ?string { return $this->category; }
     public function setCategory(string $category): self { $this->category = $category; return $this; }
 
+    public function getMerchant(): ?Merchant
+    {
+    return $this->merchant;
+    }
+
+    public function setMerchant(?Merchant $merchant): self
+     {
+    $this->merchant = $merchant;
+    return $this;
+    }
 }
