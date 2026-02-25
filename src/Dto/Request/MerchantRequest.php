@@ -15,9 +15,6 @@ class MerchantRequest
 
     #[Assert\NotBlank(message: 'La ville du marchand est obligatoire')]
     public string $city = '';
-
-    #[Assert\NotBlank(message: 'La catégorie du marchand est obligatoire')]
-    public string $category = '';
     
     #[Assert\NotBlank(message: 'Le statut du marchand est obligatoire')]
     public string $status = '';

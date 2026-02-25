@@ -49,7 +49,6 @@ class MerchantController extends AbstractController
     $dto->email = $data['email'] ?? '';
     $dto->phone = $data['phone'] ?? '';
     $dto->city = $data['city'] ?? '';
-    $dto->category = $data['category'] ?? '';
     $dto->status = $data['status'] ?? '';
     $dto->avatarColor = '';
 
@@ -78,7 +77,6 @@ public function update(int $id, Request $request): Response
     $dto->email = $data['email'] ?? '';
     $dto->phone = $data['phone'] ?? '';
     $dto->city = $data['city'] ?? '';
-    $dto->category = $data['category'] ?? '';
     $dto->status = $data['status'] ?? '';
     $dto->avatarColor = $data['avatarColor'] ?? '';
 

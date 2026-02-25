@@ -27,7 +27,6 @@ class MerchantMapper
         $response->email = $merchant->getEmail();
         $response->phone = $merchant->getPhone();
         $response->city = $merchant->getCity();
-        $response->category = $merchant->getCategory();
         $response->status = $merchant->getStatus();
         $response->joinDate = $merchant->getJoinDate()->format('Y-m-d');
 
@@ -55,7 +54,6 @@ class MerchantMapper
             ->setEmail($dto->email)
             ->setPhone($dto->phone)
             ->setCity($dto->city)
-            ->setCategory($dto->category)
             ->setStatus($dto->status)
             ->setJoinDate(new \DateTime())
             ->setAvatarColor($dto->avatarColor);

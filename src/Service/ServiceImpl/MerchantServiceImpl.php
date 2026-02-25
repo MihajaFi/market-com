@@ -82,7 +82,6 @@ class MerchantServiceImpl implements ServiceInterface
             ->setEmail($dto->email)
             ->setPhone($dto->phone)
             ->setCity($dto->city)
-            ->setCategory($dto->category)
             ->setStatus($dto->status)
             ->setAvatarColor($dto->avatarColor);
 
