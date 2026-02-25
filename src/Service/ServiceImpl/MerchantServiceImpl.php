@@ -49,6 +49,16 @@ class MerchantServiceImpl implements ServiceInterface
         );
     }
 
+    public function findTotalSaleByMerchant(): array
+    {
+        $merchants = $this->repository->findAll();
+
+        return array_map(
+            fn ($m) => $this->mapper->toResponseByMerchant($m),
+            $merchants
+        );
+    }
+
     public function save(object $dto): MerchantResponse
     {
         /** @var MerchantRequest $dto */
