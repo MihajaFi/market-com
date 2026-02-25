@@ -26,8 +26,9 @@ class Product
     #[ORM\JoinColumn(name: 'id_merchant', nullable: false)]
     private ?Merchant $merchant = null;
 
-    #[ORM\Column(type: 'text')]
-    private string $category;
+   #[ORM\ManyToOne(targetEntity: Category::class)]
+   #[ORM\JoinColumn(name: 'category_id', nullable: false)]
+   private ?Category $category = null;
 
     #[ORM\Column(type: 'float')]
     private float $price;
@@ -89,9 +90,17 @@ class Product
     public function getImage(): ?string{return $this->image;}
     public function setImage(?string $image): self{$this->image = $image;return $this;}
 
-    public function getCategory(): ?string { return $this->category; }
-    public function setCategory(string $category): self { $this->category = $category; return $this; }
+    public function getCategory(): ?Category
+    {
+    return $this->category;
+    }
 
+    public function setCategory(Category $category): self
+    {
+    $this->category = $category;
+    return $this;
+    }
+    
     public function getMerchant(): ?Merchant
     {
     return $this->merchant;

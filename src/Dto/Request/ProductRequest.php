@@ -17,7 +17,8 @@ class ProductRequest
     public int $merchantId;
 
     #[Assert\NotBlank(message: 'La catégorie du produit est obligatoire')]
-    public string $category = '';
+    #[Assert\Positive(message: 'La catégorie doit être un ID valide')]
+    public int $categoryId;
 
     #[Assert\Positive(message: 'Le prix doit être supérieur à 0')]
     public float $price = 0.0;

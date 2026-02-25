@@ -21,7 +21,7 @@ class Category
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column(length: 7)]
+    #[ORM\Column(length: 7, nullable: true)]
     private ?string $color = null;
 
     /* ================= RELATIONS ================= */
