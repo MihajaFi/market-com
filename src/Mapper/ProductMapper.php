@@ -6,21 +6,23 @@ use App\Entity\Product;
 use App\Dto\Request\ProductRequest;
 use App\Dto\Response\ProductResponse;
 use App\Entity\Merchant;
+use App\Entity\Category;
 
 class ProductMapper
 {
     public static function toEntity(
-        ProductRequest $dto,
-        Merchant $merchant,
-        ?string $imagePath = null
+    ProductRequest $dto,
+    Merchant $merchant,
+    Category $category,
+    ?string $imagePath = null
     ): Product {
-        return (new Product())
-            ->setName($dto->name)
-            ->setDescription($dto->description)
-            ->setCategory($dto->category)
-            ->setPrice($dto->price)
-            ->setImage($imagePath)
-            ->setMerchant($merchant);
+    return (new Product())
+        ->setName($dto->name)
+        ->setDescription($dto->description)
+        ->setCategory($category)
+        ->setPrice($dto->price)
+        ->setImage($imagePath)
+        ->setMerchant($merchant);
     }
 
     public static function toResponse(Product $product): ProductResponse
@@ -29,7 +31,7 @@ class ProductMapper
         $dto->id = $product->getId();
         $dto->name = $product->getName();
         $dto->description = $product->getDescription();
-        $dto->category = $product->getCategory();
+        $dto->category = $product->getCategory()->getName();
         $dto->price = $product->getPrice();
 
         $totalQuantity = 0;
@@ -45,13 +47,13 @@ class ProductMapper
         return $dto;
     }
 
-    public static function update(Product $product, ProductRequest $dto, Merchant $merchant): Product
+    public static function update(Product $product, ProductRequest $dto, Merchant $merchant, Category $category): Product
     {
-        return $product
-            ->setName($dto->name)
-            ->setDescription($dto->description)
-            ->setCategory($dto->category)
-            ->setPrice($dto->price)
-            ->setMerchant($merchant);
-    }
+    return $product
+        ->setName($dto->name)
+        ->setDescription($dto->description)
+        ->setCategory($category)
+        ->setPrice($dto->price)
+        ->setMerchant($merchant);
+    } 
 }

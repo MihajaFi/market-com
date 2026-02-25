@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20260225201551 extends AbstractMigration
+final class Version20260225213104 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,11 +20,11 @@ final class Version20260225201551 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE TABLE category (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(255) NOT NULL, description LONGTEXT DEFAULT NULL, color VARCHAR(7) NOT NULL, PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
+        $this->addSql('CREATE TABLE category (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(255) NOT NULL, description LONGTEXT DEFAULT NULL, color VARCHAR(7) DEFAULT NULL, PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
         $this->addSql('CREATE TABLE merchants (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, phone VARCHAR(20) NOT NULL, city LONGTEXT NOT NULL, category LONGTEXT NOT NULL, status LONGTEXT NOT NULL, join_date DATETIME NOT NULL, avatar_color LONGTEXT NOT NULL, PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
         $this->addSql('CREATE TABLE order_item (id INT AUTO_INCREMENT NOT NULL, quantity INT NOT NULL, unit_price DOUBLE PRECISION NOT NULL, id_product INT NOT NULL, id_order INT NOT NULL, INDEX IDX_52EA1F09DD7ADDD (id_product), INDEX IDX_52EA1F091BACD2A8 (id_order), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
         $this->addSql('CREATE TABLE orders (id INT AUTO_INCREMENT NOT NULL, order_date DATE NOT NULL, total_amount DOUBLE PRECISION NOT NULL, status VARCHAR(25) NOT NULL, address LONGTEXT NOT NULL, phone LONGTEXT NOT NULL, payment_method LONGTEXT NOT NULL, id_user INT NOT NULL, INDEX IDX_E52FFDEE6B3CA4B (id_user), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
-        $this->addSql('CREATE TABLE product (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(255) NOT NULL, description LONGTEXT NOT NULL, category LONGTEXT NOT NULL, price DOUBLE PRECISION NOT NULL, image VARCHAR(255) DEFAULT NULL, id_merchant INT NOT NULL, INDEX IDX_D34A04AD2470C974 (id_merchant), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
+        $this->addSql('CREATE TABLE product (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(255) NOT NULL, description LONGTEXT NOT NULL, price DOUBLE PRECISION NOT NULL, image VARCHAR(255) DEFAULT NULL, id_merchant INT NOT NULL, category_id INT NOT NULL, INDEX IDX_D34A04AD2470C974 (id_merchant), INDEX IDX_D34A04AD12469DE2 (category_id), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
         $this->addSql('CREATE TABLE product_item (id INT AUTO_INCREMENT NOT NULL, id_product INT NOT NULL, id_promotion INT NOT NULL, INDEX IDX_92F307BFDD7ADDD (id_product), INDEX IDX_92F307BF4128C1F6 (id_promotion), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
         $this->addSql('CREATE TABLE promotion (id INT AUTO_INCREMENT NOT NULL, type VARCHAR(20) NOT NULL, status VARCHAR(20) NOT NULL, id_promotion_loyalty INT NOT NULL, INDEX IDX_C11D7DD1D58D8FBB (id_promotion_loyalty), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
         $this->addSql('CREATE TABLE promotion_loyalty (id INT AUTO_INCREMENT NOT NULL, promotion_type VARCHAR(255) DEFAULT NULL, value DOUBLE PRECISION DEFAULT NULL, start_date DATETIME DEFAULT NULL, end_date DATETIME DEFAULT NULL, conditions VARCHAR(255) DEFAULT NULL, PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
@@ -35,6 +35,7 @@ final class Version20260225201551 extends AbstractMigration
         $this->addSql('ALTER TABLE order_item ADD CONSTRAINT FK_52EA1F091BACD2A8 FOREIGN KEY (id_order) REFERENCES orders (id)');
         $this->addSql('ALTER TABLE orders ADD CONSTRAINT FK_E52FFDEE6B3CA4B FOREIGN KEY (id_user) REFERENCES user (id)');
         $this->addSql('ALTER TABLE product ADD CONSTRAINT FK_D34A04AD2470C974 FOREIGN KEY (id_merchant) REFERENCES merchants (id)');
+        $this->addSql('ALTER TABLE product ADD CONSTRAINT FK_D34A04AD12469DE2 FOREIGN KEY (category_id) REFERENCES category (id)');
         $this->addSql('ALTER TABLE product_item ADD CONSTRAINT FK_92F307BFDD7ADDD FOREIGN KEY (id_product) REFERENCES product (id)');
         $this->addSql('ALTER TABLE product_item ADD CONSTRAINT FK_92F307BF4128C1F6 FOREIGN KEY (id_promotion) REFERENCES promotion (id)');
         $this->addSql('ALTER TABLE promotion ADD CONSTRAINT FK_C11D7DD1D58D8FBB FOREIGN KEY (id_promotion_loyalty) REFERENCES promotion_loyalty (id)');
@@ -50,6 +51,7 @@ final class Version20260225201551 extends AbstractMigration
         $this->addSql('ALTER TABLE order_item DROP FOREIGN KEY FK_52EA1F091BACD2A8');
         $this->addSql('ALTER TABLE orders DROP FOREIGN KEY FK_E52FFDEE6B3CA4B');
         $this->addSql('ALTER TABLE product DROP FOREIGN KEY FK_D34A04AD2470C974');
+        $this->addSql('ALTER TABLE product DROP FOREIGN KEY FK_D34A04AD12469DE2');
         $this->addSql('ALTER TABLE product_item DROP FOREIGN KEY FK_92F307BFDD7ADDD');
         $this->addSql('ALTER TABLE product_item DROP FOREIGN KEY FK_92F307BF4128C1F6');
         $this->addSql('ALTER TABLE promotion DROP FOREIGN KEY FK_C11D7DD1D58D8FBB');

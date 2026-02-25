@@ -48,7 +48,7 @@ class ProductController extends AbstractController
 
         $dto->name = $request->request->get('name');
         $dto->description = $request->request->get('description');
-        $dto->category = $request->request->get('category');
+        $dto->categoryId = $request->request->get('categoryId');
         $dto->price = (float)$request->request->get('price');
         $dto->image = $request->files->get('image');
         $dto->merchantId = (int)$request->request->get('merchantId');
@@ -93,7 +93,7 @@ class ProductController extends AbstractController
         $dto->name = $request->request->get('name');
         $dto->description = $request->request->get('description');
         $dto->price = (float)$request->request->get('price');
-        $dto->category = $request->request->get('category');
+        $dto->categoryId = $request->request->get('categoryId');
         $dto->image = $request->files->get('image');
         $dto->merchantId = (int)$request->request->get('merchantId');
 

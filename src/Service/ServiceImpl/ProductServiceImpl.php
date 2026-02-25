@@ -9,22 +9,26 @@ use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Dto\Request\ProductRequest;
 use App\Repository\MerchantRepository;
+use App\Repository\CategoryRepository;
 
 class ProductServiceImpl 
 {
     private ProductRepository $repository;
     private EntityManagerInterface $em;
     private MerchantRepository $merchantRepo;
+    private CategoryRepository $categoryRepo;
 
     public function __construct(
     ProductRepository $repository,
     MerchantRepository $merchantRepo,
     EntityManagerInterface $em,
+    CategoryRepository $categoryRepo,
     string $projectDir
 ) {
     $this->repository = $repository;
     $this->merchantRepo = $merchantRepo;
     $this->em = $em;
+    $this->categoryRepo = $categoryRepo;
     $this->projectDir = $projectDir;
 }
 
@@ -50,26 +54,34 @@ class ProductServiceImpl
         throw new \Exception("Merchant not found");
     }
 
-    $product = ProductMapper::toEntity($dto, $merchant, $imagePath);
+    $category = $this->categoryRepo->find($dto->categoryId);
+    if (!$category) {
+    throw new \Exception("Category not found");
+    }
+
+    $product = ProductMapper::toEntity($dto, $merchant, $category, $imagePath);
 
     $this->em->persist($product);
     $this->em->flush();
 
     return ProductMapper::toResponse($product);
-}
-   public function update(int $id, object $dto, ?string $imagePath = null): ?ProductResponse
-{
-    /** @var ProductRequest $dto */
+    }
 
+   public function update(int $id, object $dto, ?string $imagePath = null): ?ProductResponse
+    {
+    /** @var ProductRequest $dto */
     $product = $this->repository->find($id);
     if (!$product) return null;
 
     $merchant = $this->merchantRepo->find($dto->merchantId);
     if (!$merchant) throw new \Exception("Merchant not found");
 
+    $category = $this->categoryRepo->find($dto->categoryId);
+    if (!$category) throw new \Exception("Category not found"); 
+
     $oldImage = $product->getImage();
 
-    ProductMapper::update($product, $dto, $merchant);
+    ProductMapper::update($product, $dto, $merchant, $category);
 
     if ($imagePath) {
         $product->setImage($imagePath);
@@ -82,7 +94,7 @@ class ProductServiceImpl
     $this->em->flush();
 
     return ProductMapper::toResponse($product);
-}
+    }
 
     public function delete(int $id): bool
     {
