@@ -6,17 +6,17 @@ use App\Entity\Merchant;
 use App\Dto\Request\MerchantRequest;
 use App\Dto\Response\MerchantResponse;
 use App\Repository\MerchantRepository;
-use App\Repository\OrderRepository;
+use App\Repository\SellRepository;
 
 class MerchantMapper
 {
     private MerchantRepository $merchantRepository;
-    private OrderRepository $orderRepository;
+    private SellRepository $sellRepository;
 
-   public function __construct(MerchantRepository $merchantRepository, OrderRepository $orderRepository)
+   public function __construct(MerchantRepository $merchantRepository, SellRepository $sellRepository)
    {
        $this->merchantRepository = $merchantRepository;
-       $this->orderRepository = $orderRepository;
+       $this->sellRepository = $sellRepository;
    }
   
      public  function toResponse(Merchant $merchant): MerchantResponse
@@ -32,7 +32,7 @@ class MerchantMapper
         $response->joinDate = $merchant->getJoinDate()->format('Y-m-d');
 
         $response->totalSales =
-            $this->orderRepository->getTotalSalesByMerchant($merchant);
+            $this->sellRepository->getTotalSalesByMerchant($merchant);
         
         $response->avatarColor = $merchant->getAvatarColor();
 

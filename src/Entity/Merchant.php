@@ -4,8 +4,6 @@ namespace App\Entity;
 
 use App\Repository\MerchantRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity(repositoryClass: MerchantRepository::class)]
 #[ORM\Table(name: 'merchants')]
@@ -40,15 +38,6 @@ class  Merchant
     #[ORM\Column(type: 'text')]
     private string $avatarColor;
 
-    #[ORM\OneToMany(mappedBy: 'merchant', targetEntity: Order::class)]
-    private Collection $orders;
-
-    public function __construct()
-    {
-    $this->orders = new ArrayCollection();
-    }
-
-    public function getOrders(): Collection{return $this->orders;}
 
     public function getId(): ?int{return $this->id;}
 

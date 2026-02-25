@@ -80,7 +80,7 @@ class SellServiceImpl implements ServiceInterface
             return null;
         }
 
-        // ✅ Correction : utilisez les getters
+        
         $merchant = $this->merchantRepository->find($dto->getMerchantId());
         $product = $this->productRepository->find($dto->getProductId());
 
