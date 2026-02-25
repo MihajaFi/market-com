@@ -19,7 +19,6 @@ class OrderMapper
             $order->getTotalAmount(),
             $order->getStatus(),
             $order->getUser()->getUsername(),
-            $order->getMerchant()->getName(),
             $items,
             $order->getAddress(),
             $order->getPhone(),
@@ -27,11 +26,10 @@ class OrderMapper
         );
     }
 
-public static function toEntity(OrderAndOrderItemRequest $dto, $user, $merchant, $productsById)
+public static function toEntity(OrderAndOrderItemRequest $dto, $user,$productsById)
 {
     $order = new \App\Entity\Order();
     $order->setUser($user);
-    $order->setMerchant($merchant);
     $order->setStatus($dto->status);
     $order->setAddress($dto->address);
     $order->setPhone($dto->phone);

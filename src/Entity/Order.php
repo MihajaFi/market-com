@@ -19,10 +19,6 @@ class Order
     #[ORM\Column(type: 'date')]
     private ?\DateTimeInterface $orderDate = null;
 
-    #[ORM\ManyToOne(targetEntity: Merchant::class, inversedBy: 'orders')]
-    #[ORM\JoinColumn(name: 'merchant_id', nullable: false)]
-    private ?Merchant $merchant = null;
-
     #[ORM\Column(type: 'float')]
     private ?float $totalAmount = 0;
 
@@ -157,15 +153,4 @@ class Order
             $this->paymentMethod = $paymentMethod;
             return $this;
         }
-
-    public function getMerchant(): ?Merchant
-    {
-    return $this->merchant;
-     }
-
-    public function setMerchant(Merchant $merchant): static
-    {
-    $this->merchant = $merchant;
-    return $this;
-    }
 }

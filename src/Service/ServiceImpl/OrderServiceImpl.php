@@ -12,7 +12,7 @@ use App\Repository\UserRepository;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Service\ServiceInterface;
-use App\Repository\MerchantRepository;
+use App\Repository\MerchantRepository; 
 
 class OrderServiceImpl implements ServiceInterface
 {
@@ -58,15 +58,12 @@ class OrderServiceImpl implements ServiceInterface
     $user = $this->userRepo->find($dto->userId);
     if (!$user) throw new \Exception("User not found");
 
-    $merchant = $this->merchantRepo->find($dto->merchantId);
-    if (!$merchant) throw new \Exception("Merchant not found");
-
     $productIds = array_map(fn($i) => $i->productId, $dto->items);
     $products = $this->productRepo->findBy(['id' => $productIds]);
     $productsById = [];
     foreach ($products as $p) $productsById[$p->getId()] = $p;
 
-    $order = OrderMapper::toEntity($dto, $user, $merchant, $productsById);
+    $order = OrderMapper::toEntity($dto, $user, $productsById);
 
     if ($order->getStatus() === 'PAID') {
         foreach ($order->getItems() as $item) {
@@ -98,9 +95,6 @@ class OrderServiceImpl implements ServiceInterface
 
     $user = $this->userRepo->find($dto->userId);
     if (!$user) throw new \Exception("User not found");
-
-    $merchant = $this->merchantRepo->find($dto->merchantId);
-    if (!$merchant) throw new \Exception("Merchant not found");
 
     $productIds = array_map(fn($i) => $i->productId, $dto->items);
     $products = $this->productRepo->findBy(['id' => $productIds]);

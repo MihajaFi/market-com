@@ -9,7 +9,6 @@ class OrderResponse
     public float $totalAmount;
     public string $status;
     public string $userName;
-    public string $merchantName;
     public array $items = [];
     public string $address;
     public string $phone;
@@ -21,7 +20,6 @@ class OrderResponse
         float $totalAmount,
         string $status,
         string $userName,
-        string $merchantName,
         array $items = [],
         string $address = '',
         string $phone = '',
@@ -32,7 +30,6 @@ class OrderResponse
         $this->totalAmount = $totalAmount;
         $this->status = $status;
         $this->userName = $userName;
-        $this->merchantName = $merchantName;
         $this->items = $items;
         $this->address = $address;
         $this->phone = $phone;
