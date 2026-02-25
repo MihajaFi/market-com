@@ -162,8 +162,8 @@ class OrderServiceImpl implements ServiceInterface
     return true;
    }
    // --- Ajoute cette méthode à l'intérieur de la classe OrderServiceImpl ---
-public function updateStatus(int $id, string $status): ?OrderResponse
-{
+    public function updateStatus(int $id, string $status): ?OrderResponse
+    {
     $order = $this->orderRepo->find($id);
     if (!$order) {
         return null;
@@ -173,5 +173,10 @@ public function updateStatus(int $id, string $status): ?OrderResponse
     $this->em->flush();
 
     return OrderMapper::toResponse($order);
-}
+    }
+    public function findByUser(int $userId): array
+    {
+    $orders = $this->orderRepo->findBy(['user' => $userId]);
+    return array_map(fn(Order $o) => OrderMapper::toResponse($o), $orders);
+    }
 }

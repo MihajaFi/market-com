@@ -74,7 +74,18 @@ public function create(Request $request): Response
         $json = $this->serializer->serialize($orders, 'json');
         return new Response($json, 200, ['Content-Type' => 'application/json']);
     }
+    #[Route('/me', name: 'order_my', methods: ['GET'])]
+    public function myOrders(): Response
+    {
+    $user = $this->getUser(); // l'utilisateur connecté
+    if (!$user) {
+        return $this->json(['message' => 'Utilisateur non connecté'], 401);
+    }
 
+    $orders = $this->service->findByUser($user->getId());
+    $json = $this->serializer->serialize($orders, 'json');
+    return new Response($json, 200, ['Content-Type' => 'application/json']);
+    }
     // GET order by ID
     #[Route('/{id}', name: 'order_get', methods: ['GET'])]
     public function get(int $id): Response
@@ -184,4 +195,5 @@ public function create(Request $request): Response
         return $this->json(['message' => $e->getMessage()], 500);
     }
     }
+    
 }
