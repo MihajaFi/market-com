@@ -161,4 +161,17 @@ class OrderServiceImpl implements ServiceInterface
     $this->em->flush();
     return true;
    }
+   // --- Ajoute cette méthode à l'intérieur de la classe OrderServiceImpl ---
+public function updateStatus(int $id, string $status): ?OrderResponse
+{
+    $order = $this->orderRepo->find($id);
+    if (!$order) {
+        return null;
+    }
+
+    $order->setStatus($status);
+    $this->em->flush();
+
+    return OrderMapper::toResponse($order);
+}
 }
