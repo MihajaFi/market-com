@@ -26,9 +26,6 @@ class  Merchant
    #[ORM\Column(type: 'text')]
     private string $city;
 
-    #[ORM\Column(type: 'text')]
-    private string $category;
-
    #[ORM\Column(type: 'text')]
     private string $status;
 

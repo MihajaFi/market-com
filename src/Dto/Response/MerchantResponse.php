@@ -9,7 +9,6 @@ class MerchantResponse
     public string $email;
     public string $phone;
     public string $city;
-    public string $category;
     public string $status;
     public string $joinDate;
     public int $totalSales;
