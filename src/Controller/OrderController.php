@@ -10,19 +10,24 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Repository\OrderRepository;
 
 #[Route('/api/orders')]
 class OrderController extends AbstractController
 {
     private OrderServiceImpl $service;
     private SerializerInterface $serializer;
+private OrderRepository $orderRepository;
 
-    public function __construct(OrderServiceImpl $service, SerializerInterface $serializer)
-    {
-        $this->service = $service;
-        $this->serializer = $serializer;
+    public function __construct(
+    OrderServiceImpl $service,
+    SerializerInterface $serializer,
+    OrderRepository $orderRepository
+    ) {
+    $this->service = $service;
+    $this->serializer = $serializer;
+    $this->orderRepository = $orderRepository;
     }
-
     #[Route('', name: 'order_create', methods: ['POST'])]
 public function create(Request $request): Response
 {
@@ -170,30 +175,47 @@ public function create(Request $request): Response
             ['Content-Type' => 'application/json']
         );
     }
-    // PATCH update status only
+
     #[Route('/{id}/status', name: 'order_update_status', methods: ['PATCH'])]
     public function updateStatus(int $id, Request $request): Response
     {
     try {
         $data = json_decode($request->getContent(), true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            return $this->json(['message' => 'Invalid JSON: ' . json_last_error_msg()], 400);
-        }
 
         if (!isset($data['status'])) {
             return $this->json(['message' => 'Status is required'], 400);
         }
 
-        $order = $this->service->updateStatus($id, $data['status']);
+        $orderEntity = $this->orderRepository->find($id);
 
-        if (!$order) {
+        if (!$orderEntity) {
             return $this->json(['message' => 'Order not found'], 404);
         }
 
-        return $this->json($order, 200);
+        $orderRequest = new OrderAndOrderItemRequest();
+        $orderRequest->status = $data['status'];
+        $orderRequest->userId = $orderEntity->getUser()->getId();
+        $orderRequest->address = $orderEntity->getAddress();
+        $orderRequest->phone = $orderEntity->getPhone();
+        $orderRequest->paymentMethod = $orderEntity->getPaymentMethod();
+
+        $orderRequest->items = [];
+
+        foreach ($orderEntity->getItems() as $item) {
+            $itemRequest = new OrderItemRequest();
+            $itemRequest->productId = $item->getProduct()->getId();
+            $itemRequest->quantity = $item->getQuantity();
+            $itemRequest->unitPrice = $item->getUnitPrice();
+
+            $orderRequest->items[] = $itemRequest;
+        }
+
+        $order = $this->service->update($id, $orderRequest);
+
+        return $this->json($order);
+
     } catch (\Exception $e) {
         return $this->json(['message' => $e->getMessage()], 500);
     }
     }
-    
 }

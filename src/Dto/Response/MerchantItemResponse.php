@@ -2,7 +2,7 @@
 
 namespace App\Dto\Response;
 
-class MerchantItemRequest
+class MerchantItemResponse
 {
     public int $id;
     public string $merchantId;
