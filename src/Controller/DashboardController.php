@@ -34,5 +34,11 @@ class DashboardController extends AbstractController
         return $this->json($merchants);
     }
 
+     #[Route('/sales-by-month', name: 'sales_by_month', methods: ['GET'])]
+    public function salesByMonth(): Response
+    {
+        $salesByMonth = $this->service->getSalesByMonth();
+        return $this->json($salesByMonth);
+    }
 
 }
