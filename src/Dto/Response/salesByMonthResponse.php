@@ -2,7 +2,7 @@
 
 namespace App\Dto\Response;
 
-class salesByMonth
+class SalesByMonthResponse
 {
     public function __construct(
      public string $month,
