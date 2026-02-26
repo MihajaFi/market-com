@@ -2,6 +2,7 @@
 
 namespace App\Service\ServiceImpl;
 
+use App\Entity\User;
 use App\Dto\Request\MerchantRequest;
 use App\Dto\Response\MerchantResponse;
 use App\Mapper\MerchantMapper;
@@ -9,6 +10,7 @@ use App\Repository\MerchantRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Service\ServiceInterface;
 use App\Repository\OrderRepository;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class MerchantServiceImpl implements ServiceInterface
 {
@@ -16,18 +18,21 @@ class MerchantServiceImpl implements ServiceInterface
     private EntityManagerInterface $em;
     private MerchantMapper $mapper;
     private OrderRepository $orderRepo;
+    private UserPasswordHasherInterface $passwordHasher;
 
 
     public function __construct(
         MerchantRepository $repository,
         EntityManagerInterface $em,
         MerchantMapper $mapper,
-        OrderRepository $orderRepo
+        OrderRepository $orderRepo,
+        UserPasswordHasherInterface $passwordHasher
     ) {
         $this->repository = $repository;
         $this->em = $em;
         $this->mapper = $mapper;
         $this->orderRepo = $orderRepo;
+        $this->passwordHasher = $passwordHasher;
     }
 
     public function findById(int $id): ?MerchantResponse
@@ -62,12 +67,26 @@ class MerchantServiceImpl implements ServiceInterface
     public function save(object $dto): MerchantResponse
     {
         /** @var MerchantRequest $dto */
+        // 1️⃣ Créer le User Symfony
+        $user = new User();
+        $user->setEmail($dto->email);
+        $user->setUsername($dto->email);
+        $user->setRoles(['ROLE_MERCHANT']);
+
+        $plainPassword = bin2hex(random_bytes(4));
+        $hashedPassword = $this->passwordHasher->hashPassword($user, $plainPassword);
+        $user->setPassword($hashedPassword);
+        $this->em->persist($user);
+
         $merchant = $this->mapper->toEntity($dto);
 
         $this->em->persist($merchant);
         $this->em->flush();
 
-        return $this->mapper->toResponse($merchant);
+        $response = $this->mapper->toResponse($merchant);
+        $response->generatedPassword = $plainPassword;
+
+        return $response;
     }
 
     public function update(int $id, object $dto): ?MerchantResponse
