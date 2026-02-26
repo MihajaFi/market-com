@@ -58,7 +58,12 @@ class MerchantController extends AbstractController
 
     try {
         $merchant = $this->service->save($dto);
-        return $this->json($merchant, 201);
+        return $this->json(
+            [
+                'merchant' => $merchant,
+                'generatedPassword' => $merchant->generatedPassword ?? null
+            ], 201
+        );
     } catch (\Exception $e) {
         return $this->json(['message' => 'Error creating merchant: ' . $e->getMessage()], 500);
     }
