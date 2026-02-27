@@ -67,7 +67,6 @@ class MerchantServiceImpl implements ServiceInterface
     public function save(object $dto): MerchantResponse
     {
         /** @var MerchantRequest $dto */
-        // 1️⃣ Créer le User Symfony
         $user = new User();
         $user->setEmail($dto->email);
         $user->setUsername($dto->email);
@@ -120,5 +119,14 @@ class MerchantServiceImpl implements ServiceInterface
         $this->em->flush();
 
         return true;
+    }
+
+    function getMerchantByEmail(string $email): ?MerchantResponse
+    {
+        $merchant = $this->repository->findOneBy(['email' => $email]);
+
+        return $merchant
+            ? $this->mapper->toResponse($merchant)
+            : null;
     }
 }
