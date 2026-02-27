@@ -31,4 +31,27 @@ class OrderRepository extends ServiceEntityRepository
     return $conn->executeQuery($sql, ['year' => $year])
         ->fetchAllAssociative();
     }
+
+    public function findRecentOrders(int $limit = 10): array
+   {
+    return $this->createQueryBuilder('o')
+        ->orderBy('o.orderDate', 'DESC')
+        ->setMaxResults($limit)
+        ->getQuery()
+        ->getResult();
+    }
+
+    public function findRecentOrdersByMerchant(int $merchantId, int $limit = 10): array
+    {
+    return $this->createQueryBuilder('o')
+        ->innerJoin('o.items', 'oi')
+        ->innerJoin('oi.product', 'p')
+        ->innerJoin('p.merchant', 'm')
+        ->where('m.id = :merchantId')
+        ->setParameter('merchantId', $merchantId)
+        ->orderBy('o.orderDate', 'DESC')
+        ->setMaxResults($limit)
+        ->getQuery()
+        ->getResult();
+    }
 }
