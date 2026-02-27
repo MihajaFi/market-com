@@ -132,4 +132,11 @@ class ProductController extends AbstractController
         }
         return new JsonResponse(['message' => 'Product deleted']);
     }
+
+        #[Route('/merchant/{merchantId}', name: 'product_by_merchant', methods: ['GET'])]
+    public function findByMerchantId(int $merchantId): JsonResponse
+    {        $products = $this->service->findByMerchantId($merchantId);
+        return new JsonResponse($products);
+    }
+    
 }

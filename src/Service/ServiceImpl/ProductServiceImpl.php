@@ -120,4 +120,11 @@ class ProductServiceImpl
             unlink($fullPath);
         }
     }
+
+    public function findByMerchantId(int $merchantId): array
+    {
+        $products = $this->repository->findBy(['merchant' => $merchantId]);
+        return array_map(fn(Product $p) => ProductMapper::toResponse($p), $products);
+    }
+    
 }
