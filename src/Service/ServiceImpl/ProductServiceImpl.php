@@ -14,6 +14,8 @@ use App\Repository\CategoryRepository;
 use App\Dto\Response\PromotionLoyaltyResponse;
 use App\Mapper\PromotionLoyaltyMapper;
 use App\Dto\Response\StockByCategoryResponse;
+use App\Service\ServiceImpl\StockServiceImpl;
+use App\Dto\Request\StockRequest;
 
 class ProductServiceImpl 
 {
@@ -22,6 +24,7 @@ class ProductServiceImpl
     private MerchantRepository $merchantRepo;
     private CategoryRepository $categoryRepo;
     private ProductItemRepository $productItemRepo;
+    private StockServiceImpl $stockServiceImpl;
 
     public function __construct(
     ProductRepository $repository,
@@ -29,6 +32,7 @@ class ProductServiceImpl
     EntityManagerInterface $em,
     CategoryRepository $categoryRepo,
     ProductItemRepository $productItemRepo,
+    StockServiceImpl $stockServiceImpl,
     string $projectDir
 
 ) {
@@ -37,6 +41,7 @@ class ProductServiceImpl
     $this->em = $em;
     $this->categoryRepo = $categoryRepo;
     $this->productItemRepo = $productItemRepo;
+    $this->stockServiceImpl = $stockServiceImpl;
     $this->projectDir = $projectDir;
 }
 
@@ -68,9 +73,16 @@ class ProductServiceImpl
     }
 
     $product = ProductMapper::toEntity($dto, $merchant, $category, $imagePath);
-
+    
     $this->em->persist($product);
     $this->em->flush();
+
+    $stockRequest = new StockRequest();
+    $stockRequest->quantity = 0;
+    $stockRequest->alert = 'Stock is low';
+    $stockRequest->productId = $product->getId();
+
+    $this->stockServiceImpl->save($stockRequest);
 
     return ProductMapper::toResponse($product);
     }
