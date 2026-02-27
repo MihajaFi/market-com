@@ -145,6 +145,12 @@ class ProductController extends AbstractController
         $loyalty = $this->service->findPromotionsLoyalityByProductId($id);
         return new JsonResponse($loyalty);
     }
-    
 
+        #[Route('/stock/category', name: 'stock_by_category', methods: ['GET'])]
+    public function getStockByCategory(): JsonResponse
+    {
+        $stockData = $this->service->getStockByCategory();
+        return new JsonResponse($stockData);
+    }
+    
 }

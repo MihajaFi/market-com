@@ -12,4 +12,16 @@ class CategoryRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Category::class);
     }
+
+    public function sumStockByCategory(): array
+   {
+    return $this->createQueryBuilder('c')
+        ->select('c.name AS category, COALESCE(SUM(s.quantity), 0) AS stock')
+        ->leftJoin('c.products', 'p')
+        ->leftJoin('p.stocks', 's')
+        ->groupBy('c.id, c.name')
+        ->orderBy('c.name', 'ASC')
+        ->getQuery()
+        ->getArrayResult();
+    }
 }

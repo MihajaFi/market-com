@@ -13,6 +13,7 @@ use App\Repository\MerchantRepository;
 use App\Repository\CategoryRepository;
 use App\Dto\Response\PromotionLoyaltyResponse;
 use App\Mapper\PromotionLoyaltyMapper;
+use App\Dto\Response\StockByCategoryResponse;
 
 class ProductServiceImpl 
 {
@@ -141,4 +142,17 @@ class ProductServiceImpl
     return PromotionLoyaltyMapper::toResponse($loyalty);
 
     } 
+
+    public function getStockByCategory(): array
+{
+    $rows = $this->categoryRepo->sumStockByCategory();
+
+    return array_map(
+        fn($r) => new StockByCategoryResponse(
+            $r['category'],
+            (int) $r['stock']
+        ),
+        $rows
+    );
+     }
 }
