@@ -138,5 +138,13 @@ class ProductController extends AbstractController
     {        $products = $this->service->findByMerchantId($merchantId);
         return new JsonResponse($products);
     }
+
+        #[Route('/{id}/loyalty', name: 'product_loyalty', methods: ['GET'])]
+    public function findPromotionsLoyaltyByProductId(int $id): JsonResponse
+    {
+        $loyalty = $this->service->findPromotionsLoyalityByProductId($id);
+        return new JsonResponse($loyalty);
+    }
     
+
 }

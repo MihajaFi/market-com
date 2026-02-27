@@ -6,10 +6,13 @@ use App\Dto\Response\ProductResponse;
 use App\Entity\Product;
 use App\Mapper\ProductMapper;
 use App\Repository\ProductRepository;
+use App\Repository\ProductItemRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Dto\Request\ProductRequest;
 use App\Repository\MerchantRepository;
 use App\Repository\CategoryRepository;
+use App\Dto\Response\PromotionLoyaltyResponse;
+use App\Mapper\PromotionLoyaltyMapper;
 
 class ProductServiceImpl 
 {
@@ -17,18 +20,22 @@ class ProductServiceImpl
     private EntityManagerInterface $em;
     private MerchantRepository $merchantRepo;
     private CategoryRepository $categoryRepo;
+    private ProductItemRepository $productItemRepo;
 
     public function __construct(
     ProductRepository $repository,
     MerchantRepository $merchantRepo,
     EntityManagerInterface $em,
     CategoryRepository $categoryRepo,
+    ProductItemRepository $productItemRepo,
     string $projectDir
+
 ) {
     $this->repository = $repository;
     $this->merchantRepo = $merchantRepo;
     $this->em = $em;
     $this->categoryRepo = $categoryRepo;
+    $this->productItemRepo = $productItemRepo;
     $this->projectDir = $projectDir;
 }
 
@@ -126,5 +133,12 @@ class ProductServiceImpl
         $products = $this->repository->findBy(['merchant' => $merchantId]);
         return array_map(fn(Product $p) => ProductMapper::toResponse($p), $products);
     }
-    
+
+    public function findPromotionsLoyalityByProductId(int $productId) : ?PromotionLoyaltyResponse
+    {
+
+    $loyalty = $this->productItemRepo->findLoyaltyByProductId($productId);
+    return PromotionLoyaltyMapper::toResponse($loyalty);
+
+    } 
 }
