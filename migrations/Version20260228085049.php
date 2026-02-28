@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20260226185616 extends AbstractMigration
+final class Version20260228085049 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -41,7 +41,7 @@ final class Version20260226185616 extends AbstractMigration
         $this->addSql('ALTER TABLE product ADD CONSTRAINT FK_D34A04AD12469DE2 FOREIGN KEY (category_id) REFERENCES category (id)');
         $this->addSql('ALTER TABLE product_item ADD CONSTRAINT FK_92F307BFDD7ADDD FOREIGN KEY (id_product) REFERENCES product (id)');
         $this->addSql('ALTER TABLE product_item ADD CONSTRAINT FK_92F307BF4128C1F6 FOREIGN KEY (id_promotion) REFERENCES promotion (id)');
-        $this->addSql('ALTER TABLE promotion ADD CONSTRAINT FK_C11D7DD1D58D8FBB FOREIGN KEY (id_promotion_loyalty) REFERENCES promotion_loyalty (id)');
+        $this->addSql('ALTER TABLE promotion ADD CONSTRAINT FK_C11D7DD1D58D8FBB FOREIGN KEY (id_promotion_loyalty) REFERENCES promotion_loyalty (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE sell ADD CONSTRAINT FK_9B9ED07D2470C974 FOREIGN KEY (id_merchant) REFERENCES merchants (id)');
         $this->addSql('ALTER TABLE sell ADD CONSTRAINT FK_9B9ED07DDD7ADDD FOREIGN KEY (id_product) REFERENCES product (id)');
         $this->addSql('ALTER TABLE stock ADD CONSTRAINT FK_4B365660DD7ADDD FOREIGN KEY (id_product) REFERENCES product (id)');

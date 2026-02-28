@@ -22,8 +22,12 @@ class ProductItem
 
     /* ================= PROMOTION (MANQUAIT) ================= */
 
-    #[ORM\ManyToOne(inversedBy: 'productItems')]
-    #[ORM\JoinColumn(name: 'id_promotion', nullable: false)]
+    #[ORM\ManyToOne(targetEntity: Promotion::class, inversedBy: 'productItems')]
+    #[ORM\JoinColumn(
+    name: "id_promotion",
+    nullable: false,
+    onDelete: "CASCADE"
+    )]
     private ?Promotion $promotion = null;
 
     /* ================= GETTERS ================= */
