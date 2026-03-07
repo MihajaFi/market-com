@@ -16,7 +16,12 @@ class Promotion
     private ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: PromotionLoyalty::class)]
-    #[ORM\JoinColumn(name: "id_promotion_loyalty", referencedColumnName: "id", nullable: false)]
+    #[ORM\JoinColumn(
+    name: "id_promotion_loyalty",
+    referencedColumnName: "id",
+    nullable: false,
+    onDelete: "CASCADE"
+    )]
     private PromotionLoyalty $promotionLoyalty;
 
     #[ORM\OneToMany(

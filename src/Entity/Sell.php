@@ -23,41 +23,27 @@ class Sell
     #[ORM\Column(name: 'total_sales', type: 'decimal', precision: 10, scale: 2, nullable: false)]
     private ?float $totalSales = null;
 
-    public function getId(): ?int
+    #[ORM\Column(type: 'datetime')]
+    private ?\DateTimeInterface $saleDate = null;
+
+    public function __construct()
     {
-        return $this->id;
+
+       $this->saleDate = new \DateTime('now', new \DateTimeZone(date_default_timezone_get()));
+    
     }
 
-    public function getMerchant(): ?Merchant
-    {
-        return $this->merchant;
-    }
+    public function getId(): ?int { return $this->id; }
 
-    public function setMerchant(?Merchant $merchant): self
-    {
-        $this->merchant = $merchant;
-        return $this;
-    }
+    public function getMerchant(): ?Merchant { return $this->merchant; }
+    public function setMerchant(?Merchant $merchant): self { $this->merchant = $merchant; return $this; }
 
-    public function getProduct(): ?Product
-    {
-        return $this->product;
-    }
+    public function getProduct(): ?Product { return $this->product; }
+    public function setProduct(?Product $product): self { $this->product = $product; return $this; }
 
-    public function setProduct(?Product $product): self
-    {
-        $this->product = $product;
-        return $this;
-    }
+    public function getTotalSales(): ?float { return $this->totalSales; }
+    public function setTotalSales(float $totalSales): self { $this->totalSales = $totalSales; return $this; }
 
-    public function getTotalSales(): ?float
-    {
-        return $this->totalSales;
-    }
-
-    public function setTotalSales(float $totalSales): self
-    {
-        $this->totalSales = $totalSales;
-        return $this;
-    }
+    public function getSaleDate(): ?\DateTimeInterface { return $this->saleDate; }
+    public function setSaleDate(\DateTimeInterface $date): static { $this->saleDate = $date; return $this; }
 }

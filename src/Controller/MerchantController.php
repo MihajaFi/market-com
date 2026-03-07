@@ -109,4 +109,14 @@ public function update(int $id, Request $request): Response
         }
         return $this->json(['message' => 'Merchant deleted successfully']);
     }
+
+        #[Route('/email/{email}', name: 'merchant_by_email', methods: ['GET'])]
+        public function getByEmail(string $email): Response
+        {
+            $merchant = $this->service->getMerchantByEmail($email);
+            if (!$merchant) {
+                return $this->json(['message' => 'Merchant not found'], 404);
+            }
+            return $this->json($merchant);
+        }
 }

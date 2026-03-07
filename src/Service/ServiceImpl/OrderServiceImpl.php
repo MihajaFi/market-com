@@ -14,6 +14,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Service\ServiceInterface;
 use App\Repository\MerchantRepository; 
 use App\Service\ServiceImpl\SellServiceImpl;
+use App\Dto\Response\OrderCurrentResponse;
 
 class OrderServiceImpl implements ServiceInterface
 {
@@ -209,7 +210,8 @@ class OrderServiceImpl implements ServiceInterface
     $this->em->flush();
     return true;
    }
-   // --- Ajoute cette méthode à l'intérieur de la classe OrderServiceImpl ---
+  
+
     public function updateStatus(int $id, string $status): ?OrderResponse
     {
     $order = $this->orderRepo->find($id);
@@ -227,4 +229,31 @@ class OrderServiceImpl implements ServiceInterface
     $orders = $this->orderRepo->findBy(['user' => $userId]);
     return array_map(fn(Order $o) => OrderMapper::toResponse($o), $orders);
     }
+
+   public function getRecentOrdersResponse(int $limit = 10): array
+    {
+        $orders = $this->orderRepo->findRecentOrders($limit);
+
+        return array_map(fn($order) => new OrderCurrentResponse(
+            $order->getId(),
+            $order->getUser()->getUsername(),
+            $order->getTotalAmount(),
+            $order->getOrderDate()->format('Y-m-d H:i:s'),
+            $order->getStatus()
+        ), $orders);
+    }
+
+    public function getRecentOrdersByMerchant(int $merchantId, int $limit = 10): array
+    {
+        $orders = $this->orderRepo->findRecentOrdersByMerchant($merchantId, $limit);
+
+    return array_map(fn($order) => new OrderCurrentResponse(
+        $order->getId(),
+        $order->getUser()->getUsername(),
+        $order->getTotalAmount(),
+        $order->getOrderDate()->format('Y-m-d H:i:s'),
+        $order->getStatus()
+    ), $orders);
+    }
+    
 }

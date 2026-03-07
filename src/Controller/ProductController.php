@@ -132,4 +132,25 @@ class ProductController extends AbstractController
         }
         return new JsonResponse(['message' => 'Product deleted']);
     }
+
+        #[Route('/merchant/{merchantId}', name: 'product_by_merchant', methods: ['GET'])]
+    public function findByMerchantId(int $merchantId): JsonResponse
+    {        $products = $this->service->findByMerchantId($merchantId);
+        return new JsonResponse($products);
+    }
+
+        #[Route('/{id}/loyalty', name: 'product_loyalty', methods: ['GET'])]
+    public function findPromotionsLoyaltyByProductId(int $id): JsonResponse
+    {
+        $loyalty = $this->service->findPromotionsLoyalityByProductId($id);
+        return new JsonResponse($loyalty);
+    }
+
+        #[Route('/stock/category', name: 'stock_by_category', methods: ['GET'])]
+    public function getStockByCategory(): JsonResponse
+    {
+        $stockData = $this->service->getStockByCategory();
+        return new JsonResponse($stockData);
+    }
+    
 }

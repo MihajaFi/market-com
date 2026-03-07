@@ -11,13 +11,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\OrderRepository;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 #[Route('/api/orders')]
 class OrderController extends AbstractController
 {
     private OrderServiceImpl $service;
     private SerializerInterface $serializer;
-private OrderRepository $orderRepository;
+    private OrderRepository $orderRepository;
 
     public function __construct(
     OrderServiceImpl $service,
@@ -218,4 +219,19 @@ public function create(Request $request): Response
         return $this->json(['message' => $e->getMessage()], 500);
     }
     }
+
+    #[Route('/recent/date', name: 'order_recent', methods: ['GET'])]
+    public function recentOrders(): JsonResponse
+    {
+    $orders = $this->service->getRecentOrdersResponse(5); 
+    return $this->json($orders);
+    }
+
+    #[Route('/recent/merchant/{merchantId}', name: 'order_recent_by_merchant', methods: ['GET'])]
+    public function recentOrdersByMerchant(int $merchantId): JsonResponse
+    {
+        $orders = $this->service->getRecentOrdersByMerchant($merchantId, 5);
+        return $this->json($orders);
+    }
+    
 }

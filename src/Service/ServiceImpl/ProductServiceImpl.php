@@ -6,10 +6,16 @@ use App\Dto\Response\ProductResponse;
 use App\Entity\Product;
 use App\Mapper\ProductMapper;
 use App\Repository\ProductRepository;
+use App\Repository\ProductItemRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Dto\Request\ProductRequest;
 use App\Repository\MerchantRepository;
 use App\Repository\CategoryRepository;
+use App\Dto\Response\PromotionLoyaltyResponse;
+use App\Mapper\PromotionLoyaltyMapper;
+use App\Dto\Response\StockByCategoryResponse;
+use App\Service\ServiceImpl\StockServiceImpl;
+use App\Dto\Request\StockRequest;
 
 class ProductServiceImpl 
 {
@@ -17,18 +23,25 @@ class ProductServiceImpl
     private EntityManagerInterface $em;
     private MerchantRepository $merchantRepo;
     private CategoryRepository $categoryRepo;
+    private ProductItemRepository $productItemRepo;
+    private StockServiceImpl $stockServiceImpl;
 
     public function __construct(
     ProductRepository $repository,
     MerchantRepository $merchantRepo,
     EntityManagerInterface $em,
     CategoryRepository $categoryRepo,
+    ProductItemRepository $productItemRepo,
+    StockServiceImpl $stockServiceImpl,
     string $projectDir
+
 ) {
     $this->repository = $repository;
     $this->merchantRepo = $merchantRepo;
     $this->em = $em;
     $this->categoryRepo = $categoryRepo;
+    $this->productItemRepo = $productItemRepo;
+    $this->stockServiceImpl = $stockServiceImpl;
     $this->projectDir = $projectDir;
 }
 
@@ -60,9 +73,16 @@ class ProductServiceImpl
     }
 
     $product = ProductMapper::toEntity($dto, $merchant, $category, $imagePath);
-
+    
     $this->em->persist($product);
     $this->em->flush();
+
+    $stockRequest = new StockRequest();
+    $stockRequest->quantity = 0;
+    $stockRequest->alert = 'Stock is low';
+    $stockRequest->productId = $product->getId();
+
+    $this->stockServiceImpl->save($stockRequest);
 
     return ProductMapper::toResponse($product);
     }
@@ -120,4 +140,31 @@ class ProductServiceImpl
             unlink($fullPath);
         }
     }
+
+    public function findByMerchantId(int $merchantId): array
+    {
+        $products = $this->repository->findBy(['merchant' => $merchantId]);
+        return array_map(fn(Product $p) => ProductMapper::toResponse($p), $products);
+    }
+
+    public function findPromotionsLoyalityByProductId(int $productId) : ?PromotionLoyaltyResponse
+    {
+
+    $loyalty = $this->productItemRepo->findLoyaltyByProductId($productId);
+    return PromotionLoyaltyMapper::toResponse($loyalty);
+
+    } 
+
+    public function getStockByCategory(): array
+{
+    $rows = $this->categoryRepo->sumStockByCategory();
+
+    return array_map(
+        fn($r) => new StockByCategoryResponse(
+            $r['category'],
+            (int) $r['stock']
+        ),
+        $rows
+    );
+     }
 }

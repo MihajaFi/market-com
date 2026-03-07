@@ -15,12 +15,12 @@ class SellMapper
         Merchant $merchant,
         Product $product
     ): Sell {
-        $sell = new Sell();
+        $sell = new Sell(); 
 
         $sell->setMerchant($merchant);
         $sell->setProduct($product);
         $sell->setTotalSales($dto->getTotalSales());
-        
+
         return $sell;
     }
 
@@ -30,7 +30,8 @@ class SellMapper
             $sell->getId(),
             $sell->getMerchant()->getId(),
             $sell->getProduct()->getId(),
-            $sell->getTotalSales()
+            $sell->getTotalSales(),
+            $sell->getSaleDate()?->format('Y-m-d H:i:s')
         );
     }
 }
